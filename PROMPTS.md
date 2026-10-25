@@ -36,6 +36,9 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #15](#prompt-15--adopt-option-a-value-deterministic-reducer-state-t6) | Implementation (T6) | Adopt Option A: Value-Deterministic Reducer State (T6) | Gemini 4 Argon (High) | Accepted |
 | [Prompt #16](#prompt-16--verify-reducer-code-transitions--stale-request-handling-t6) | Implementation (T6) | Verify Reducer Code Transitions & Stale Request Handling (T6) | Gemini 4 Argon (High) | Accepted |
 | [Prompt #17](#prompt-17--inspect-diff--commit-t6-value-deterministic-reducer) | Implementation (T6) | Inspect Diff & Commit T6 Value-Deterministic Reducer | Gemini 4 Argon (High) | Accepted |
+| [Prompt #18](#prompt-18--execute-t7-hook--ui) | Implementation (T7) | Execute T7 — Hook + UI | Gemini 4 Argon (High) | Accepted |
+| [Prompt #19](#prompt-19--acceptance-review--integration-test-hardening-for-t7) | Implementation (T7) | Acceptance Review & Integration Test Hardening for T7 | Gemini 4 Argon (High) | Accepted |
+| [Prompt #20](#prompt-20--approve--commit-t7) | Implementation (T7) | Approve & Commit T7 | Gemini 4 Argon (High) | Accepted (Created Conventional Commit for T7) |
 
 ---
 
@@ -1626,6 +1629,69 @@ git diff --stat
 git diff -- frontend/src/calculator/types.ts frontend/src/calculator/reducer.ts frontend/src/calculator/reducer.test.ts PROMPTS.md
 
 Si el resultado coincide con el reporte y no aparecen cambios ajenos a T6, puedes hacer el commit como comit nuevo.
+```
+
+---
+
+### Prompt #18 — Execute T7: Hook + UI
+
+- **Phase:** T7 — Hook + UI
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Implement `useCalculator.ts` (`useReducer` + `useEffect` with `AbortController`), `Display.tsx` (two-line expression + value/error display with `aria-live="polite"` and adaptive font sizing), `Keypad.tsx` (4×6 CSS Grid with `>=56px` touch targets, `aria-label`s, and loading-state disabling except `AC`), `Calculator.tsx` (physical keyboard shortcut listener), `App.tsx`, `index.css` (responsive mobile full-screen and desktop ~380px card), and `Calculator.test.tsx` (integration tests with stubbed `fetch`).
+- **Outcome:** Accepted — Implemented all T7 deliverables; `lint`, `typecheck`, `build`, and `test:coverage` pass with 41 tests across 5 test files (98.94% line coverage, 97.05% branch coverage, 100% function coverage).
+- **Files Affected:** `frontend/src/calculator/useCalculator.ts`, `frontend/src/components/Display.tsx`, `frontend/src/components/Keypad.tsx`, `frontend/src/components/Calculator.tsx`, `frontend/src/components/Calculator.test.tsx`, `frontend/src/App.tsx`, `frontend/src/index.css`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+T6 has been reviewed and corrected. The reducer now uses explicit `awaitingSecondOperand` and `lastRequestId` fields in `CalculatorState`, with no `WeakSet` or `WeakMap` identity-based state.
+
+Before implementing T7, inspect the current committed or working-tree version of T6 and verify that the reducer, tests, and types agree with `implementation_plan.md`. Preserve the value-deterministic state transitions and request-ID handling. Do not reintroduce identity-based metadata or redesign the reducer unless a concrete defect is demonstrated.
+
+Proceed with T7 only, following the existing T7 (real integration) prompt and `implementation_plan.md` as the definitive specification. Do not begin T8 or commit/push changes.
+```
+
+---
+
+### Prompt #19 — Acceptance Review & Integration Test Hardening for T7
+
+- **Phase:** T7 — Hook + UI
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Review T7 against `implementation_plan.md`, verify `POST /api/v1/percentage` UI-to-fetch integration coverage and cancelled/stale request protection across `AC` and subsequent operations in `Calculator.test.tsx`, and confirm whether 360 px responsive layout was visually verified.
+- **Outcome:** Accepted — Added UI integration test for `50 + 10 % =` (`POST /api/v1/percentage {"a":10}` -> `0.1`, `POST /api/v1/add {"a":50,"b":0.1}` -> `50.1`), expanded cancelled/stale request integration test in `Calculator.test.tsx` to cover both late failure after `AC` and late success from an earlier request while a newer request is active (42 tests passing across 5 test files), and reported honestly that 360 px has not yet been visually rendered in a real browser.
+- **Files Affected:** `frontend/src/components/Calculator.test.tsx`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Review the completed T7 implementation against `implementation_plan.md`. Do not begin T8, commit, or push.
+
+The reported lint, typecheck, build, and coverage results are passing. Perform a focused acceptance review of the actual code and tests, especially these two points:
+
+1. **Percentage integration coverage:** Verify that `Calculator.test.tsx` tests the complete UI-to-fetch flow for `%`, including the expected `POST /api/v1/percentage` payload and displayed result. If this is missing, add the smallest appropriate integration test using the existing fetch-stubbing conventions. Do not duplicate reducer unit tests.
+2. **Cancelled and stale requests:** Verify that after `AC` cancels a pending request, a late success or failure cannot overwrite the cleared state. Also verify that a late response from an earlier request cannot overwrite a newer operation. Inspect both the hook's effect cleanup and the reducer's request-ID guards. Add a focused integration test only if the current tests do not establish the required behavior.
+
+Also confirm whether the responsive layout was actually tested at 360 px. If it was not, report that honestly; do not claim visual verification without evidence.
+
+Keep all changes within T7 and `PROMPTS.md`. Do not weaken existing assertions or coverage thresholds. Run `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm run test:coverage` after any changes.
+
+Report the files inspected or changed, the tests added, actual command results, whether 360 px was visually verified, and the final Git status. Leave all changes uncommitted and stop for review.
+```
+
+---
+
+### Prompt #20 — Approve & Commit T7
+
+- **Phase:** T7 — Git Commit
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Stage and commit the reviewed T7 (Hook + UI + Integration Tests) deliverables using Conventional Commits while keeping `.agents/` and `AGENTS.md` untracked locally.
+- **Outcome:** Accepted — Created commit `feat(frontend): implement calculator hook, UI components, and integration tests`.
+- **Files Affected:** `frontend/src/calculator/useCalculator.ts`, `frontend/src/components/Display.tsx`, `frontend/src/components/Keypad.tsx`, `frontend/src/components/Calculator.tsx`, `frontend/src/components/Calculator.test.tsx`, `frontend/src/App.tsx`, `frontend/src/index.css`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Good, make the corresponding commit
 ```
 
 

@@ -1,7 +1,12 @@
+import { Calculator } from './components/Calculator';
+
 export default function App() {
   return (
     <main className="app-shell">
-      <h1>Sezzle Calculator</h1>
+      <header className="app-header">
+        <h1 className="app-title">Sezzle Calculator</h1>
+      </header>
+      <Calculator />
     </main>
   );
 }

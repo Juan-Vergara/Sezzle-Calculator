@@ -6,10 +6,22 @@
   --bg-page: #0f172a;
   --bg-surface: #1e293b;
   --bg-display: #090d16;
+  --border-subtle: rgba(148, 163, 184, 0.16);
+
   --text-primary: #f8fafc;
   --text-secondary: #94a3b8;
+
+  --btn-digit-bg: #334155;
+  --btn-digit-hover: #475569;
+  --btn-utility-bg: #1e293b;
+  --btn-utility-hover: #293548;
+  --btn-operator-bg: #6d28d9;
+  --btn-operator-hover: #7c3aed;
+  --btn-equals-bg: #8b5cf6;
+  --btn-equals-hover: #a78bfa;
+
   --accent-primary: #8b5cf6;
-  --accent-danger: #ef4444;
+  --accent-danger: #f87171;
 
   font-family: var(--font-sans);
   line-height: 1.5;
@@ -36,11 +48,226 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+  background: radial-gradient(circle at top, #1e293b 0%, var(--bg-page) 70%);
 }
 
 #root {
   width: 100%;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.app-shell {
+  width: 100%;
+  max-width: 380px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 0.25rem;
+}
+
+.app-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.calculator-card {
+  width: 100%;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1.25rem;
+  padding: 1rem;
+  box-shadow:
+    0 20px 25px -5px rgba(0, 0, 0, 0.45),
+    0 8px 10px -6px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calculator-display {
+  background-color: var(--bg-display);
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.875rem;
+  padding: 0.875rem 1rem;
+  min-height: 6.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: flex-end;
+  overflow: hidden;
+  transition: opacity 0.15s ease;
+}
+
+.calculator-display[data-status='loading'] {
+  opacity: 0.8;
+}
+
+.display-expression {
+  width: 100%;
+  min-height: 1.5rem;
+  font-family: var(--font-mono);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  text-align: right;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.display-value {
+  display: block;
+  width: 100%;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  text-align: right;
+  line-height: 1.2;
+  word-break: break-all;
+}
+
+.display-value--normal {
+  font-size: 2.25rem;
+}
+
+.display-value--compact {
+  font-size: 1.75rem;
+}
+
+.display-value--small {
+  font-size: 1.35rem;
+}
+
+.display-value--error {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--accent-danger);
+  word-break: normal;
+}
+
+.calculator-keypad {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-rows: repeat(6, minmax(56px, 1fr));
+  gap: 0.625rem;
+}
+
+.keypad-button {
+  min-height: 56px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 0.75rem;
+  font-family: var(--font-sans);
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+  user-select: none;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  transition:
+    background-color 0.12s ease,
+    transform 0.06s ease,
+    opacity 0.12s ease,
+    box-shadow 0.12s ease;
+}
+
+.keypad-button:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.keypad-button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.keypad-button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.keypad-button--digit {
+  background-color: var(--btn-digit-bg);
+}
+
+.keypad-button--digit:hover:not(:disabled) {
+  background-color: var(--btn-digit-hover);
+}
+
+.keypad-button--utility {
+  background-color: var(--btn-utility-bg);
+  color: #cbd5e1;
+}
+
+.keypad-button--utility:hover:not(:disabled) {
+  background-color: var(--btn-utility-hover);
+}
+
+.keypad-button--operator {
+  background-color: var(--btn-operator-bg);
+}
+
+.keypad-button--operator:hover:not(:disabled) {
+  background-color: var(--btn-operator-hover);
+}
+
+.keypad-button--active {
+  box-shadow: inset 0 0 0 2px #f8fafc;
+  background-color: var(--btn-operator-hover);
+}
+
+.keypad-button--equals {
+  background-color: var(--btn-equals-bg);
+  color: #ffffff;
+}
+
+.keypad-button--equals:hover:not(:disabled) {
+  background-color: var(--btn-equals-hover);
+}
+
+.keypad-button--col-2 {
+  grid-column: span 2;
+}
+
+.keypad-button--row-2 {
+  grid-row: span 2;
+}
+
+@media (max-width: 480px) {
+  #root {
+    align-items: stretch;
+  }
+
+  .app-shell {
+    max-width: none;
+    min-height: 100dvh;
+    padding: 0.75rem;
+    justify-content: space-between;
+  }
+
+  .calculator-card {
+    flex: 1;
+    justify-content: space-between;
+    border-radius: 1rem;
+  }
+
+  .calculator-display {
+    min-height: 7.5rem;
+  }
+
+  .calculator-keypad {
+    flex: 1;
+  }
 }
