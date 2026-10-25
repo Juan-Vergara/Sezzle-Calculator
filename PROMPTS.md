@@ -26,6 +26,7 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #5](#prompt-5--execute-t1-repository-bootstrap-completion) | Implementation (T1) | Execute T1 — Repository Bootstrap (Completion) | Gemini 4 Argon (High) | Accepted |
 | [Prompt #6](#prompt-6--execute-t2-backend-domain-interrupted) | Implementation (T2) | Execute T2 — Backend Domain (Initial Attempt) | Claude Opus 5.5 (High) | Modified (Implemented `go.mod`, `calculator.go`, `calculator_test.go` with 100% coverage; interrupted before logging prompt) |
 | [Prompt #7](#prompt-7--recover--verify-t2-backend-domain) | Implementation (T2) | Recover & Verify T2 — Backend Domain | Gemini 4 Argon (High) | Accepted |
+| [Prompt #8](#prompt-8--approve--commit-t1-and-t2) | Implementation (T1/T2) | Approve & Commit T1 and T2 | Gemini 4 Argon (High) | Accepted (Created Conventional Commits for T1 and T2) |
 
 ---
 
@@ -1100,4 +1101,21 @@ Choose exactly one:
 
 **Stop after T2. Do not continue to T3.** And also give me your opinion on the github repo, should we constantly commit? so that it looks better proggress when reviewed by sezzle, I think it could be better, in which case whe whould follow the Conventional commits convention.
 ```
+
+---
+
+### Prompt #8 — Approve & Commit T1 and T2
+
+- **Phase:** T1 / T2 — Git Commit
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Stage and commit the reviewed T1 (Repository Bootstrap) and T2 (Backend Domain) deliverables using Conventional Commits while keeping `.agents/` and `AGENTS.md` untracked locally.
+- **Outcome:** Accepted — Created two atomic commits (`chore: bootstrap repository structure and documentation` and `feat(backend): implement pure calculator domain and unit tests`).
+- **Files Affected:** `.gitattributes`, `.gitignore`, `README.md`, `PROMPTS.md`, `backend/go.mod`, `backend/internal/calculator/calculator.go`, `backend/internal/calculator/calculator_test.go`
+
+**Verbatim Prompt:**
+
+```text
+Reviewed. Looks good. Commit T1 and T2. 
+```
+
 
