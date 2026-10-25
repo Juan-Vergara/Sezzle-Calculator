@@ -1,0 +1,27 @@
+# Go build and coverage artifacts
+backend/bin/
+backend/*.exe
+backend/coverage.out
+backend/coverage.html
+*.exe
+*.test
+*.out
+
+# Frontend dependencies, build, and coverage artifacts
+node_modules/
+frontend/dist/
+frontend/coverage/
+coverage/
+*.tsbuildinfo
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# Editor and OS files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
