@@ -40,9 +40,11 @@ export interface CalculatorState {
   accumulator: number | null;
   pendingOp: BinaryOperation | null;
   startNewEntry: boolean;
+  awaitingSecondOperand: boolean;
   status: CalculatorStatus;
   error: string | null;
   request: CalculationRequest | null;
+  lastRequestId: number;
 }
 
 export type Action =

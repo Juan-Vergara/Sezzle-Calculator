@@ -9,37 +9,12 @@ export const INITIAL_STATE: CalculatorState = {
   accumulator: null,
   pendingOp: null,
   startNewEntry: false,
+  awaitingSecondOperand: false,
   status: 'ready',
   error: null,
   request: null,
+  lastRequestId: 0,
 };
-
-// Tracks the last issued request ID along a state chain so sequential requests
-// receive monotonically increasing IDs even after `request` resets to `null`,
-// while fresh state objects in unit tests always start deterministically at 1.
-const lastRequestIds = new WeakMap<CalculatorState, number>();
-
-// Tracks states where `pendingOp` is active and `startNewEntry` is `true` because
-// a unary operation (or sign toggle) produced the right-hand operand. In these
-// states, digits still start a fresh entry, but pressing a binary operator must
-// chain `pendingOp(accumulator, entry)` rather than replacing `pendingOp`.
-const unaryOperandStates = new WeakSet<CalculatorState>();
-
-function issueRequestId(state: CalculatorState): number {
-  const prev = lastRequestIds.get(state) ?? 0;
-  return prev + 1;
-}
-
-function withSequence(
-  prevState: CalculatorState,
-  nextState: CalculatorState,
-): CalculatorState {
-  const seq = nextState.request?.id ?? lastRequestIds.get(prevState) ?? 0;
-  if (seq > 0) {
-    lastRequestIds.set(nextState, seq);
-  }
-  return nextState;
-}
 
 function countDigits(entry: string): number {
   let count = 0;
@@ -69,14 +44,22 @@ export function formatExpression(
 /**
  * Pure calculator state machine implementing immediate-execution (left-to-right)
  * keypad transitions without performing arithmetic on the frontend.
+ *
+ * Deterministic by value: transitions depend exclusively on `state` and `action`,
+ * with no external mutable state or object-identity tracking.
  */
 export function reducer(
   state: CalculatorState,
   action: Action,
 ): CalculatorState {
   // AC is always available, including during loading or error states.
+  // Preserving `lastRequestId` ensures any subsequent request receives a strictly
+  // newer ID than an in-flight request that was cleared.
   if (action.type === 'clear') {
-    return withSequence(state, { ...INITIAL_STATE });
+    return {
+      ...INITIAL_STATE,
+      lastRequestId: state.lastRequestId,
+    };
   }
 
   // Async completion actions are only processed if their requestId matches the active request.
@@ -89,42 +72,43 @@ export function reducer(
     const continuation = state.request.then;
 
     if (continuation.type === 'chain') {
-      return withSequence(state, {
+      return {
         entry: formatted,
         accumulator: action.result,
         pendingOp: continuation.nextOp,
         startNewEntry: true,
+        awaitingSecondOperand: true,
         status: 'ready',
         error: null,
         request: null,
-      });
+        lastRequestId: state.lastRequestId,
+      };
     }
 
     if (continuation.type === 'equals') {
-      return withSequence(state, {
+      return {
         entry: formatted,
         accumulator: null,
         pendingOp: null,
         startNewEntry: true,
+        awaitingSecondOperand: false,
         status: 'ready',
         error: null,
         request: null,
-      });
+        lastRequestId: state.lastRequestId,
+      };
     }
 
     // continuation.type === 'unary'
-    const nextState = withSequence(state, {
+    return {
       ...state,
       entry: formatted,
       startNewEntry: true,
+      awaitingSecondOperand: false,
       status: 'ready',
       error: null,
       request: null,
-    });
-    if (nextState.pendingOp !== null && nextState.accumulator !== null) {
-      unaryOperandStates.add(nextState);
-    }
-    return nextState;
+    };
   }
 
   if (action.type === 'failed') {
@@ -132,15 +116,17 @@ export function reducer(
       return state;
     }
 
-    return withSequence(state, {
+    return {
       entry: '0',
       accumulator: null,
       pendingOp: null,
       startNewEntry: false,
+      awaitingSecondOperand: false,
       status: 'error',
       error: action.message,
       request: null,
-    });
+      lastRequestId: state.lastRequestId,
+    };
   }
 
   // While a backend request is in flight, ignore all keypad actions except AC (handled above).
@@ -151,10 +137,11 @@ export function reducer(
   // In error state, a digit resets the error and starts typing; other keys (except AC) are ignored.
   if (state.status === 'error') {
     if (action.type === 'digit') {
-      return withSequence(state, {
+      return {
         ...INITIAL_STATE,
         entry: action.digit,
-      });
+        lastRequestId: state.lastRequestId,
+      };
     }
     return state;
   }
@@ -162,34 +149,38 @@ export function reducer(
   switch (action.type) {
     case 'digit': {
       if (state.startNewEntry) {
-        return withSequence(state, {
+        return {
           ...state,
           entry: action.digit,
           startNewEntry: false,
-        });
+          awaitingSecondOperand: false,
+        };
       }
       if (state.entry === '0') {
-        return withSequence(state, {
+        return {
           ...state,
           entry: action.digit,
-        });
+          awaitingSecondOperand: false,
+        };
       }
       if (countDigits(state.entry) >= MAX_ENTRY_DIGITS) {
         return state;
       }
-      return withSequence(state, {
+      return {
         ...state,
         entry: state.entry + action.digit,
-      });
+        awaitingSecondOperand: false,
+      };
     }
 
     case 'decimal': {
       if (state.startNewEntry) {
-        return withSequence(state, {
+        return {
           ...state,
           entry: '0.',
           startNewEntry: false,
-        });
+          awaitingSecondOperand: false,
+        };
       }
       if (state.entry.includes('.')) {
         return state;
@@ -197,10 +188,11 @@ export function reducer(
       if (countDigits(state.entry) >= MAX_ENTRY_DIGITS) {
         return state;
       }
-      return withSequence(state, {
+      return {
         ...state,
         entry: `${state.entry}.`,
-      });
+        awaitingSecondOperand: false,
+      };
     }
 
     case 'toggleSign': {
@@ -210,14 +202,11 @@ export function reducer(
       const nextEntry = state.entry.startsWith('-')
         ? state.entry.slice(1)
         : `-${state.entry}`;
-      const nextState = withSequence(state, {
+      return {
         ...state,
         entry: nextEntry,
-      });
-      if (unaryOperandStates.has(state)) {
-        unaryOperandStates.add(nextState);
-      }
-      return nextState;
+        awaitingSecondOperand: false,
+      };
     }
 
     case 'backspace': {
@@ -227,45 +216,47 @@ export function reducer(
       const sliced = state.entry.slice(0, -1);
       const nextEntry =
         sliced === '' || sliced === '-' || sliced === '-0' ? '0' : sliced;
-      return withSequence(state, {
+      return {
         ...state,
         entry: nextEntry,
-      });
+      };
     }
 
     case 'binaryOp': {
       const currentVal = Number(state.entry);
 
       if (state.pendingOp !== null && state.accumulator !== null) {
-        if (state.startNewEntry && !unaryOperandStates.has(state)) {
+        if (state.awaitingSecondOperand) {
           // Replace the pending operator without issuing a request.
-          return withSequence(state, {
+          return {
             ...state,
             pendingOp: action.operation,
-          });
+          };
         }
 
         // Immediate execution: evaluate pendingOp(acc, entry) on the backend, then chain action.operation.
-        const id = issueRequestId(state);
-        return withSequence(state, {
+        const id = state.lastRequestId + 1;
+        return {
           ...state,
           status: 'loading',
           error: null,
+          lastRequestId: id,
           request: {
             id,
             operation: state.pendingOp,
             operands: [state.accumulator, currentVal],
             then: { type: 'chain', nextOp: action.operation },
           },
-        });
+        };
       }
 
-      return withSequence(state, {
+      return {
         ...state,
         accumulator: currentVal,
         pendingOp: action.operation,
         startNewEntry: true,
-      });
+        awaitingSecondOperand: true,
+      };
     }
 
     case 'equals': {
@@ -273,33 +264,35 @@ export function reducer(
         return state;
       }
 
-      const id = issueRequestId(state);
-      return withSequence(state, {
+      const id = state.lastRequestId + 1;
+      return {
         ...state,
         status: 'loading',
         error: null,
+        lastRequestId: id,
         request: {
           id,
           operation: state.pendingOp,
           operands: [state.accumulator, Number(state.entry)],
           then: { type: 'equals' },
         },
-      });
+      };
     }
 
     case 'unaryOp': {
-      const id = issueRequestId(state);
-      return withSequence(state, {
+      const id = state.lastRequestId + 1;
+      return {
         ...state,
         status: 'loading',
         error: null,
+        lastRequestId: id,
         request: {
           id,
           operation: action.operation,
           operands: [Number(state.entry)],
           then: { type: 'unary' },
         },
-      });
+      };
     }
   }
 }

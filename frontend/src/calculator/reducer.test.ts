@@ -134,15 +134,19 @@ describe('calculator/reducer', () => {
       expect(reducer(s1, { type: 'backspace' })).toBe(s1);
     });
 
-    it('resets to INITIAL_STATE on AC from any state, including loading', () => {
+    it('resets calculator state on AC from any state, including loading, while preserving lastRequestId against stale responses', () => {
       const loadingState = applyActions(INITIAL_STATE, [
         { type: 'digit', digit: '9' },
         { type: 'unaryOp', operation: 'sqrt' },
       ]);
       expect(loadingState.status).toBe('loading');
+      expect(loadingState.lastRequestId).toBe(1);
 
       const cleared = reducer(loadingState, { type: 'clear' });
-      expect(cleared).toEqual(INITIAL_STATE);
+      expect(cleared).toEqual({
+        ...INITIAL_STATE,
+        lastRequestId: 1,
+      });
     });
   });
 
@@ -232,7 +236,7 @@ describe('calculator/reducer', () => {
       });
     });
 
-    it('creates a unary request and preserves pendingOp (e.g. `50 + 10 % =` -> `50.1`)', () => {
+    it('creates a unary request and preserves pendingOp (e.g. `50 + 10 % =` -> `50.1`), and starts a fresh entry if a digit is typed after `%`', () => {
       const s1 = applyActions(INITIAL_STATE, [
         { type: 'digit', digit: '5' },
         { type: 'digit', digit: '0' },
@@ -261,55 +265,112 @@ describe('calculator/reducer', () => {
       expect(s2.accumulator).toBe(50);
       expect(s2.pendingOp).toBe('add');
       expect(s2.startNewEntry).toBe(true);
+      expect(s2.awaitingSecondOperand).toBe(false);
 
-      const s3 = reducer(s2, { type: 'equals' });
+      // Entering a digit after `50 + 10 %` replaces `0.1` instead of concatenating `0.17`
+      const afterDigit = reducer({ ...s2 }, { type: 'digit', digit: '7' });
+      expect(afterDigit.entry).toBe('7');
+      expect(afterDigit.startNewEntry).toBe(false);
+
+      // Pressing `=` on `50 + 10 %` (including on a shallow-copied state) evaluates `50 + 0.1 = 50.1`
+      const s3 = reducer({ ...s2 }, { type: 'equals' });
       expect(s3.request).toEqual({
         id: 2,
         operation: 'add',
         operands: [50, 0.1],
         then: { type: 'equals' },
       });
+
+      const s4 = reducer({ ...s3 }, {
+        type: 'resolved',
+        requestId: 2,
+        result: 50.1,
+      });
+      expect(s4.entry).toBe('50.1');
+      expect(s4.accumulator).toBeNull();
+      expect(s4.pendingOp).toBeNull();
     });
 
-    it('chains pending binary operation when another binary operator follows a unary operation (e.g. `2 + 9 √ × 4 =` -> `20`)', () => {
-      const s1 = applyActions(INITIAL_STATE, [
-        { type: 'digit', digit: '2' },
+    it('is deterministic by value for `3 +` vs `3 + 9 √` followed by `×` across reducer states, shallow copies, and manual literals', () => {
+      // Case 1: `3 +`, then `×` replaces `+`
+      const afterThreePlus = applyActions(INITIAL_STATE, [
+        { type: 'digit', digit: '3' },
+        { type: 'binaryOp', operation: 'add' },
+      ]);
+      const manualThreePlus: CalculatorState = {
+        entry: '3',
+        accumulator: 3,
+        pendingOp: 'add',
+        startNewEntry: true,
+        awaitingSecondOperand: true,
+        status: 'ready',
+        error: null,
+        request: null,
+        lastRequestId: 0,
+      };
+      expect(afterThreePlus).toEqual(manualThreePlus);
+
+      for (const candidate of [
+        afterThreePlus,
+        { ...afterThreePlus },
+        manualThreePlus,
+      ]) {
+        const replaced = reducer(candidate, {
+          type: 'binaryOp',
+          operation: 'multiply',
+        });
+        expect(replaced.status).toBe('ready');
+        expect(replaced.pendingOp).toBe('multiply');
+        expect(replaced.accumulator).toBe(3);
+        expect(replaced.request).toBeNull();
+      }
+
+      // Case 2: `3 + 9 √`, then `×` resolves `3 + 3` before chaining multiplication
+      const beforeSqrt = applyActions(INITIAL_STATE, [
+        { type: 'digit', digit: '3' },
         { type: 'binaryOp', operation: 'add' },
         { type: 'digit', digit: '9' },
         { type: 'unaryOp', operation: 'sqrt' },
       ]);
-
-      const afterSqrt = reducer(s1, {
+      const afterSqrt = reducer(beforeSqrt, {
         type: 'resolved',
         requestId: 1,
         result: 3,
       });
-      expect(afterSqrt.entry).toBe('3');
-      expect(afterSqrt.accumulator).toBe(2);
-      expect(afterSqrt.pendingOp).toBe('add');
-      expect(afterSqrt.startNewEntry).toBe(true);
+      const manualAfterSqrt: CalculatorState = {
+        entry: '3',
+        accumulator: 3,
+        pendingOp: 'add',
+        startNewEntry: true,
+        awaitingSecondOperand: false,
+        status: 'ready',
+        error: null,
+        request: null,
+        lastRequestId: 1,
+      };
+      expect(afterSqrt).toEqual(manualAfterSqrt);
 
-      // Toggling sign on the unary result keeps it as the active right-hand operand
-      const negated = reducer(afterSqrt, { type: 'toggleSign' });
-      expect(negated.entry).toBe('-3');
-      const restored = reducer(negated, { type: 'toggleSign' });
-      expect(restored.entry).toBe('3');
-
-      // Pressing `×` must evaluate `2 + 3` and chain `multiply`, NOT replace `+` with `×`
-      const afterMultiply = reducer(restored, {
-        type: 'binaryOp',
-        operation: 'multiply',
-      });
-      expect(afterMultiply.status).toBe('loading');
-      expect(afterMultiply.request).toEqual({
-        id: 2,
-        operation: 'add',
-        operands: [2, 3],
-        then: { type: 'chain', nextOp: 'multiply' },
-      });
+      for (const candidate of [
+        afterSqrt,
+        { ...afterSqrt },
+        manualAfterSqrt,
+      ]) {
+        const chained = reducer(candidate, {
+          type: 'binaryOp',
+          operation: 'multiply',
+        });
+        expect(chained.status).toBe('loading');
+        expect(chained.lastRequestId).toBe(2);
+        expect(chained.request).toEqual({
+          id: 2,
+          operation: 'add',
+          operands: [3, 3],
+          then: { type: 'chain', nextOp: 'multiply' },
+        });
+      }
     });
 
-    it('ignores stale resolved or failed actions whose requestId does not match active request', () => {
+    it('ignores stale resolved or failed actions without identity-based metadata, including across AC and shallow copies', () => {
       expect(
         reducer(INITIAL_STATE, { type: 'resolved', requestId: 99, result: 42 }),
       ).toBe(INITIAL_STATE);
@@ -321,20 +382,72 @@ describe('calculator/reducer', () => {
         }),
       ).toBe(INITIAL_STATE);
 
-      const loading = reducer(INITIAL_STATE, {
+      const loading1 = reducer(INITIAL_STATE, {
         type: 'unaryOp',
         operation: 'sqrt',
       });
+      expect(loading1.request?.id).toBe(1);
+
+      // Shallow-copied loading state rejects mismatched requestId
+      const copiedLoading1 = { ...loading1 };
       expect(
-        reducer(loading, { type: 'resolved', requestId: 999, result: 3 }),
-      ).toBe(loading);
+        reducer(copiedLoading1, { type: 'resolved', requestId: 999, result: 3 }),
+      ).toBe(copiedLoading1);
       expect(
-        reducer(loading, {
+        reducer(copiedLoading1, {
           type: 'failed',
           requestId: 999,
           message: 'stale error',
         }),
-      ).toBe(loading);
+      ).toBe(copiedLoading1);
+
+      // Clearing during request #1 preserves lastRequestId = 1, sets request = null,
+      // and rejects late resolved/failed responses from request #1 while idle.
+      const cleared = { ...reducer(copiedLoading1, { type: 'clear' }) };
+      expect(cleared.request).toBeNull();
+      expect(cleared.lastRequestId).toBe(1);
+      expect(cleared.awaitingSecondOperand).toBe(false);
+      expect(
+        reducer(cleared, { type: 'resolved', requestId: 1, result: 3 }),
+      ).toBe(cleared);
+      expect(
+        reducer(cleared, {
+          type: 'failed',
+          requestId: 1,
+          message: 'late error after AC',
+        }),
+      ).toBe(cleared);
+
+      // Starting request #2 on a shallow-copied cleared state issues requestId 2
+      // and ignores both late resolved and late failed responses from request #1.
+      const loading2 = reducer(
+        reducer(cleared, { type: 'digit', digit: '4' }),
+        { type: 'unaryOp', operation: 'sqrt' },
+      );
+      expect(loading2.lastRequestId).toBe(2);
+      expect(loading2.request?.id).toBe(2);
+
+      const manualLoading2: CalculatorState = { ...loading2 };
+      expect(
+        reducer(manualLoading2, { type: 'resolved', requestId: 1, result: 3 }),
+      ).toBe(manualLoading2);
+      expect(
+        reducer(manualLoading2, {
+          type: 'failed',
+          requestId: 1,
+          message: 'late error from request 1',
+        }),
+      ).toBe(manualLoading2);
+
+      const resolved2 = reducer(manualLoading2, {
+        type: 'resolved',
+        requestId: 2,
+        result: 2,
+      });
+      expect(resolved2.entry).toBe('2');
+      expect(resolved2.status).toBe('ready');
+      expect(resolved2.lastRequestId).toBe(2);
+      expect(resolved2.awaitingSecondOperand).toBe(false);
     });
   });
 
@@ -379,9 +492,11 @@ describe('calculator/reducer', () => {
         accumulator: null,
         pendingOp: null,
         startNewEntry: false,
+        awaitingSecondOperand: false,
         status: 'error',
         error: 'division by zero is not allowed',
         request: null,
+        lastRequestId: 1,
       });
 
       // Operators, decimal, toggleSign, backspace are ignored while in error state
@@ -404,10 +519,14 @@ describe('calculator/reducer', () => {
       expect(recoveredByDigit.status).toBe('ready');
       expect(recoveredByDigit.error).toBeNull();
       expect(recoveredByDigit.entry).toBe('3');
+      expect(recoveredByDigit.lastRequestId).toBe(1);
 
-      // Pressing AC also clears the error
+      // Pressing AC also clears the error while keeping lastRequestId
       const recoveredByAC = reducer(errored, { type: 'clear' });
-      expect(recoveredByAC).toEqual(INITIAL_STATE);
+      expect(recoveredByAC).toEqual({
+        ...INITIAL_STATE,
+        lastRequestId: 1,
+      });
     });
   });
 

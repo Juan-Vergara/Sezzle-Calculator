@@ -31,7 +31,11 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #10](#prompt-10--execute-t4-frontend-scaffold) | Implementation (T4) | Execute T4 — Frontend Scaffold | Gemini 4 Argon (High) | Accepted |
 | [Prompt #11](#prompt-11--execute-t5-frontend-client--formatter--types) | Implementation (T5) | Execute T5 — Frontend Client + Formatter + Types | Gemini 4 Argon (High) | Accepted |
 | [Prompt #12](#prompt-12--execute-t6-calculator-state-machine-reducer--keys) | Implementation (T6) | Execute T6 — Calculator State Machine (Reducer + Keys) | Gemini 4 Argon (High) | Accepted |
-| [Prompt #13](#prompt-13--review--fix-unary-chaining-with-pending-binary-operation-t6) | Implementation (T6) | Review & Fix Unary Chaining with Pending Binary Operation (T6) | Gemini 4 Argon (High) | Accepted (Fixed binary chaining after unary resolution and committed T6) |
+| [Prompt #13](#prompt-13--review--fix-unary-chaining-with-pending-binary-operation-t6) | Implementation (T6) | Review & Fix Unary Chaining with Pending Binary Operation (T6) | Gemini 4 Argon (High) | Modified (Refined in Prompts #14–#15 to eliminate `WeakSet`/`WeakMap` identity state) |
+| [Prompt #14](#prompt-14--architectural-review-of-weaksetcalculatorstate-purity-t6) | Implementation (T6) | Architectural Review of `WeakSet<CalculatorState>` Purity (T6) | Gemini 4 Argon (High) | Accepted (Analyzed value collision and presented Options A/B/C) |
+| [Prompt #15](#prompt-15--adopt-option-a-value-deterministic-reducer-state-t6) | Implementation (T6) | Adopt Option A: Value-Deterministic Reducer State (T6) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #16](#prompt-16--verify-reducer-code-transitions--stale-request-handling-t6) | Implementation (T6) | Verify Reducer Code Transitions & Stale Request Handling (T6) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #17](#prompt-17--inspect-diff--commit-t6-value-deterministic-reducer) | Implementation (T6) | Inspect Diff & Commit T6 Value-Deterministic Reducer | Gemini 4 Argon (High) | Accepted |
 
 ---
 
@@ -1523,6 +1527,105 @@ Stop after T6 and wait for review. Do not begin T7.
 Creo que hay algo pendiente, aunque recuerda siempre apegarte al plan si estoy en lo incorrecto. hay un punto funcional que sí merece atención: el manejo de operaciones unarias mientras existe una operación binaria pendiente.
 
 Si es asi, resolvamoslo y entonces si es necesario hacemos el commit
+```
+
+---
+
+### Prompt #14 — Architectural Review of `WeakSet<CalculatorState>` Purity (T6)
+
+- **Phase:** T6 — Calculator State Machine (Reducer + Keys)
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Evaluate whether using `WeakSet<CalculatorState>` (and `WeakMap<CalculatorState, number>`) introduces hidden object-identity state outside `CalculatorState` that breaks referential transparency when states are shallow-copied or constructed literally.
+- **Outcome:** Accepted — Proved the value collision between `3 +` and `3 + 9 √` under the 7 base fields and presented three options, recommending Option A (explicit value-based fields in `CalculatorState`).
+- **Files Affected:** None (architectural analysis)
+
+**Verbatim Prompt:**
+
+```text
+La corrección del reducer parece abordar el caso borde, pero hay un detalle importante: el uso de un WeakSet<CalculatorState> introduce información de estado fuera de CalculatorState. Antes de aceptarlo definitivamente, conviene comprobar que esa solución no dependa de identidades de objetos que se pierdan al copiar estados o que hagan que las transiciones sean difíciles de razonar. No significa que esté mal, pero sí es una decisión que merece revisión, especialmente en una máquina de estados pura.
+```
+
+---
+
+### Prompt #15 — Adopt Option A: Value-Deterministic Reducer State (T6)
+
+- **Phase:** T6 — Calculator State Machine (Reducer + Keys)
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Replace `WeakSet<CalculatorState>` and `WeakMap<CalculatorState, number>` with explicit value-based fields in `CalculatorState` (`awaitingSecondOperand: boolean` and `lastRequestId: number`), make `reducer(state, action)` 100% deterministic by value, and add regression tests across reducer-produced states, shallow copies, and manual object literals.
+- **Outcome:** Accepted — Removed `WeakSet` and `WeakMap`, added `awaitingSecondOperand` and `lastRequestId` to `CalculatorState`, verified 100% statement/branch/function/line coverage on `reducer.ts` and `keys.ts`, and left changes uncommitted for review.
+- **Files Affected:** `frontend/src/calculator/types.ts`, `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Adopt **Option A**, following `implementation_plan.md` as the definitive specification.
+
+Before changing code:
+1. Inspect the current `CalculatorState`, reducer, reducer tests, `keys.ts`, and the relevant sections of `implementation_plan.md`.
+2. Confirm exactly how `WeakSet<CalculatorState>` and `WeakMap<CalculatorState, number>` are currently used.
+3. Identify the smallest plan-consistent change that removes hidden identity-based state and preserves all approved calculator behaviors.
+
+Implement the correction with these requirements:
+
+- Make the reducer deterministic by value: `reducer(state, action)` must not depend on object identity, prior calls, or external mutable collections.
+- Remove the `WeakSet` and `WeakMap` workaround.
+- Represent any additional information needed for correct transitions explicitly in the state or in the approved request/action contract. Keep the change minimal; do not redesign unrelated parts of the state machine.
+- Preserve the distinction between replacing a pending binary operator when its second operand has not been entered and chaining the pending operation after a unary result has resolved.
+- Preserve correct behavior for digit entry, decimal entry, sign toggling, backspace, `AC`, equals, `√`, `%`, operator replacement, left-to-right chaining, loading/error handling, and stale-response protection.
+- Preserve the approved API contract and avoid adding features or scope beyond the plan.
+- Add regression tests that pass both reducer-produced states and equivalent shallow-copied or manually constructed states. Include at least:
+  1. `3 +`, then `×` replaces `+`.
+  2. `3 + 9 √`, then `×` resolves `3 + 3` before chaining multiplication.
+  3. `50 + 10 % =` produces `50.1`.
+  4. After `50 + 10 %`, entering a digit follows the intended calculator behavior and does not accidentally concatenate with `0.1`.
+  5. Stale requests are ignored without identity-based metadata.
+- Update existing tests as needed, without weakening assertions or coverage thresholds.
+- Record the exact prompt in `PROMPTS.md` using the existing prompt-logging convention.
+
+Run the frontend tests, lint, typecheck, build, and coverage commands required by the plan. Report actual results and inspect the final diff.
+
+Do not amend the T6 commit automatically. Leave changes uncommitted and report the recommended commit message. Do not start T7 or any later task until this correction has been reviewed.
+
+If the plan does not clearly determine an edge case, explain the ambiguity and propose the smallest resolution rather than silently inventing behavior.
+```
+
+---
+
+### Prompt #16 — Verify Reducer Code Transitions & Stale Request Handling (T6)
+
+- **Phase:** T6 — Calculator State Machine (Reducer + Keys)
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Audit `reducer.ts` line by line to demonstrate how `lastRequestId` is incremented, how it is preserved on `AC` (`clear`), how stale `resolved`/`failed` responses are rejected after clearing or starting another operation, and that `awaitingSecondOperand` and `lastRequestId` are initialized in every state transition.
+- **Outcome:** Accepted — Provided a complete transition-by-transition code audit and expanded `reducer.test.ts` to assert stale `resolved` and `failed` rejection both immediately after `AC` (while idle) and after starting a subsequent operation.
+- **Files Affected:** `frontend/src/calculator/reducer.test.ts`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Bien, una observacion creo, aunque recuerda siempre procurar el plan. Hay un detalle importante: el reporte no demuestra por sí solo que todas las transiciones sean correctas. En particular, conviene comprobar en el código cómo se incrementa lastRequestId, cómo se conserva al pulsar AC y cómo se rechazan respuestas antiguas después de limpiar o iniciar otra operación. También hay que confirmar que las nuevas propiedades estén inicializadas en todos los estados pertinentes.
+```
+
+---
+
+### Prompt #17 — Inspect Diff & Commit T6 Value-Deterministic Reducer
+
+- **Phase:** T6 — Calculator State Machine (Reducer + Keys)
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Run `git status --short`, `git diff --check`, `git diff --stat`, and `git diff` on the 4 modified T6 files (`types.ts`, `reducer.ts`, `reducer.test.ts`, `PROMPTS.md`), confirm no unrelated changes exist, and create a new Conventional Commit.
+- **Outcome:** Accepted — Verified clean diff and created commit `refactor(frontend): make calculator reducer state transitions deterministic by value`.
+- **Files Affected:** `frontend/src/calculator/types.ts`, `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Bien, si primero ejecuta
+
+git status --short
+git diff --check
+git diff --stat
+git diff -- frontend/src/calculator/types.ts frontend/src/calculator/reducer.ts frontend/src/calculator/reducer.test.ts PROMPTS.md
+
+Si el resultado coincide con el reporte y no aparecen cambios ajenos a T6, puedes hacer el commit como comit nuevo.
 ```
 
 
