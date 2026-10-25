@@ -28,6 +28,7 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #7](#prompt-7--recover--verify-t2-backend-domain) | Implementation (T2) | Recover & Verify T2 — Backend Domain | Gemini 4 Argon (High) | Accepted |
 | [Prompt #8](#prompt-8--approve--commit-t1-and-t2) | Implementation (T1/T2) | Approve & Commit T1 and T2 | Gemini 4 Argon (High) | Accepted (Created Conventional Commits for T1 and T2) |
 | [Prompt #9](#prompt-9--execute-t3-api--server) | Implementation (T3) | Execute T3 — API + Server | Gemini 4 Argon (High) | Accepted |
+| [Prompt #10](#prompt-10--execute-t4-frontend-scaffold) | Implementation (T4) | Execute T4 — Frontend Scaffold | Gemini 4 Argon (High) | Accepted |
 
 ---
 
@@ -1266,6 +1267,95 @@ Do not modify `implementation_plan.md` or claim that an unmet coverage target pa
 
 Preserve all existing entries in `PROMPTS.md`. Record this exact prompt verbatim using the
 ```
+
+---
+
+### Prompt #10 — Execute T4: Frontend Scaffold
+
+- **Phase:** T4 — Frontend Scaffold
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Scaffold the React + TypeScript + Vite frontend under `frontend/`, configure the `/api` dev proxy to `http://localhost:8080`, set up Vitest (`jsdom`, React Testing Library, `user-event`, `jest-dom`, `@vitest/coverage-v8`), remove starter boilerplate, and verify `npm run build`, `npm run lint`, `npm run typecheck`, and `npm test`.
+- **Outcome:** Accepted — Created the clean Vite `react-ts` scaffold with strict TypeScript, ESLint, Vitest + coverage configuration, and verified `build`, `lint`, `typecheck`, and `test`.
+- **Files Affected:** `frontend/package.json`, `frontend/package-lock.json`, `frontend/tsconfig.json`, `frontend/tsconfig.app.json`, `frontend/tsconfig.node.json`, `frontend/vite.config.ts`, `frontend/eslint.config.js`, `frontend/index.html`, `frontend/src/vite-env.d.ts`, `frontend/src/test/setup.ts`, `frontend/src/index.css`, `frontend/src/main.tsx`, `frontend/src/App.tsx`, `frontend/src/App.test.tsx`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Execute **T4 — Frontend Scaffold**, following `implementation_plan.md` as the specification. If this prompt conflicts with the plan, follow the plan.
+
+T1, T2, and T3 are complete and committed. Implement T4 only.
+
+### 1. Inspect before modifying
+
+1. Read `implementation_plan.md`, especially sections 0, 5, 7, 10, 11, and 12.
+2. Read `AGENTS.md` and the applicable local skills if available.
+3. Inspect Git status, recent commits, existing `PROMPTS.md`, and the backend module.
+4. Confirm the installed Node.js and npm versions.
+5. Preserve existing work and do not modify backend implementation.
+
+### 2. Create the frontend scaffold
+
+Create the base project under `frontend/` using **Vite with the React TypeScript template**.
+
+Follow the approved frontend stack in section 5:
+- React and TypeScript with strict type checking.
+- Vite.
+- Plain CSS, using CSS variables and CSS Grid where appropriate.
+- Native `fetch` for future API calls.
+- npm and a committed `package-lock.json`.
+- No state-management, UI, or CSS framework dependencies.
+
+Configure the project structure and scripts needed for later tasks. Set up the planned Vitest testing environment, including `jsdom`, React Testing Library, `user-event`, `jest-dom`, and `@vitest/coverage-v8`, using only the dependencies specified in section 5.
+
+Configure:
+- Vite development proxy for `/api` to the Go backend at `http://localhost:8080`.
+- Vitest through the approved Vite configuration.
+- `test/setup.ts` for the testing-library setup.
+- Scripts for `build`, `lint`, `typecheck`, `test`, and `test:coverage`.
+- ESLint and TypeScript configuration compatible with the approved stack.
+
+Use sensible configuration consistent with the plan. Do not add dependencies beyond those specified without approval.
+
+### 3. Remove starter boilerplate
+
+Remove the default Vite demo content that is not part of the approved architecture. Establish the planned base structure under `frontend/src/`, including the application entry points and stylesheet.
+
+Do not implement the calculator UI, reducer, API client, number formatter, keyboard handling, or calculator-specific behavior yet. Those belong to T5–T7.
+
+Do not add Docker files, Nginx configuration, CI, documentation expansions, or other later-task deliverables.
+
+### 4. Verify T4
+
+From `frontend/`, actually execute:
+
+1. `npm run build`
+2. `npm run lint`
+3. `npm run typecheck`
+4. `npm test`
+
+All must pass. If dependency installation requires network access or approval in the current environment, stop and report the blocker instead of claiming success or silently changing the stack.
+
+Inspect the final Git diff and status. Preserve the existing backend and earlier task work.
+
+### 5. Record the prompt
+
+Preserve all existing entries in `PROMPTS.md`. Record this exact prompt verbatim using the local `log-prompt` skill if available, including the model, objective, result, and affected files as required by the plan.
+
+Do not stage, commit, or push.
+
+### 6. Report and stop
+
+Report:
+- Files created or modified.
+- Dependencies added and their purpose.
+- Vite proxy and test configuration.
+- Actual output/status of all four verification commands.
+- Git status and any blockers or deviations from the plan.
+- Whether T4 is `PASS`, `PASS WITH NOTES`, `INCOMPLETE`, or `BLOCKED`.
+
+Stop after T4 and wait for review. Do not begin T5.
+```
+
 
 
 
