@@ -27,6 +27,7 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #6](#prompt-6--execute-t2-backend-domain-interrupted) | Implementation (T2) | Execute T2 — Backend Domain (Initial Attempt) | Claude Opus 5.5 (High) | Modified (Implemented `go.mod`, `calculator.go`, `calculator_test.go` with 100% coverage; interrupted before logging prompt) |
 | [Prompt #7](#prompt-7--recover--verify-t2-backend-domain) | Implementation (T2) | Recover & Verify T2 — Backend Domain | Gemini 4 Argon (High) | Accepted |
 | [Prompt #8](#prompt-8--approve--commit-t1-and-t2) | Implementation (T1/T2) | Approve & Commit T1 and T2 | Gemini 4 Argon (High) | Accepted (Created Conventional Commits for T1 and T2) |
+| [Prompt #9](#prompt-9--execute-t3-api--server) | Implementation (T3) | Execute T3 — API + Server | Gemini 4 Argon (High) | Accepted |
 
 ---
 
@@ -1117,5 +1118,154 @@ Choose exactly one:
 ```text
 Reviewed. Looks good. Commit T1 and T2. 
 ```
+
+---
+
+### Prompt #9 — Execute T3: API + Server
+
+- **Phase:** T3 — Backend HTTP API & Server
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Implement the Go standard library HTTP API layer (`internal/api`: router, generic operation handler, JSON decoding/validation, error mapping, logging & panic recovery middlewares), server entrypoint (`cmd/server/main.go`), and comprehensive `httptest` test suite (`handler_test.go`), plus verify with `go test`, coverage, and live `curl.exe` requests.
+- **Outcome:** Accepted — All 6 T3 files implemented with zero external dependencies, passing `gofmt`, `go vet`, `go test ./...` with high coverage, and live HTTP verification via `curl.exe`.
+- **Files Affected:** `backend/internal/api/errors.go`, `backend/internal/api/handler.go`, `backend/internal/api/middleware.go`, `backend/internal/api/router.go`, `backend/internal/api/handler_test.go`, `backend/cmd/server/main.go`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Execute **T3 — API + Server**, following `implementation_plan.md` as the definitive specification. Remenber to follow whats on the plan over what the prompt says in case something differs or its incoherent, and do it in the way you consider more appropiate for the plan, the assignment, functionality, and profesionalism.
+
+T1 and T2 are complete and committed:
+
+Implement T3 only. 
+
+### 1. Inspect the existing project
+
+Before modifying anything:
+
+1. Read `implementation_plan.md`, especially sections 3, 4, 6, 10, and 12.
+2. Read `AGENTS.md` and the applicable local skills if available.
+3. Inspect Git status, recent commits, `backend/go.mod`, and the existing calculator implementation and tests.
+4. Confirm the current module path and Go toolchain.
+5. Preserve existing T1 and T2 work.
+
+### 2. Implement the exact backend structure specified in section 4
+
+Create the T3 files:
+
+- `backend/internal/api/router.go`
+- `backend/internal/api/handler.go`
+- `backend/internal/api/errors.go`
+- `backend/internal/api/middleware.go`
+- `backend/internal/api/handler_test.go`
+- `backend/cmd/server/main.go`
+
+Follow the approved design:
+
+- Use Go's standard library `net/http` router, compatible with Go 1.22 or later.
+- Use one generic operation handler.
+- Register operation routes by iterating over `calculator.Operations()`.
+- Reuse `calculator.Calculate` and the existing domain sentinel errors.
+- Keep the three existing architectural layers: `cmd/server`, `internal/api`, and `internal/calculator`.
+- Add no external dependencies and no separate service or repository layer.
+
+### 3. Follow the API contract in section 3 exactly
+
+Implement these endpoints:
+
+| Method | Route | JSON body |
+|---|---|---|
+| POST | `/api/v1/add` | `{"a": n, "b": n}` |
+| POST | `/api/v1/subtract` | `{"a": n, "b": n}` |
+| POST | `/api/v1/multiply` | `{"a": n, "b": n}` |
+| POST | `/api/v1/divide` | `{"a": n, "b": n}` |
+| POST | `/api/v1/power` | `{"a": n, "b": n}` |
+| POST | `/api/v1/sqrt` | `{"a": n}` |
+| POST | `/api/v1/percentage` | `{"a": n}` |
+| GET | `/healthz` | No body |
+
+Successful operations return HTTP `200`, `Content-Type: application/json`, and `{"result": n}`.
+
+Errors must use the exact JSON envelope:
+
+`{"error":{"code":"ERROR_CODE","message":"error message"}}`
+
+Implement the status codes, error codes, and behavior defined in section 3 of the plan:
+
+- `400 INVALID_REQUEST`: malformed or empty JSON, unknown fields, trailing JSON data, or an extra operand for a unary operation.
+- `400 MISSING_OPERAND`: a required operand is absent.
+- `400 INVALID_OPERAND`: a nonnumeric operand, explicit `null`, or a number outside the `float64` range.
+- `413 PAYLOAD_TOO_LARGE`: request body larger than 1 KiB.
+- `422 DIVISION_BY_ZERO`: division by zero.
+- `422 NEGATIVE_SQUARE_ROOT`: square root of a negative number.
+- `422 RESULT_OUT_OF_RANGE`: an infinite result.
+- `422 UNDEFINED_RESULT`: a `NaN` result.
+- `404 NOT_FOUND`: an unknown route under `/api/`.
+- `405 METHOD_NOT_ALLOWED`: an incorrect method on an operation route, with `Allow: POST`.
+- `500 INTERNAL_ERROR`: an unexpected panic.
+
+Follow the plan's additional requirements:
+
+- Decode JSON with `json.Decoder` and `DisallowUnknownFields`.
+- Use `*float64` to distinguish missing operands from zero.
+- Distinguish `json.UnmarshalTypeError` from JSON syntax errors.
+- Treat explicit `null` as `INVALID_OPERAND`, not as a missing operand.
+- Verify that the second JSON decode returns `io.EOF`.
+- Normalize negative zero to zero through the existing domain behavior.
+- Limit the body to 1 KiB with `http.MaxBytesReader`.
+
+Do not invent alternative status codes, error codes, routes, or response schemas.
+
+### 4. Implement the approved middleware and server startup
+
+Follow section 4:
+
+- Middleware provides request logging with `slog` and panic recovery that returns a `500 INTERNAL_ERROR` JSON response.
+- The server reads `PORT`, defaulting to `8080`.
+- Configure `http.Server` with the specified read, write, idle, and read-header timeouts.
+- Implement graceful shutdown using `signal.NotifyContext`.
+- Keep `main.go` focused on server wiring, with no arithmetic or handler business logic.
+
+### 5. Implement the tests specified in section 6
+
+In `handler_test.go`, use Go's `testing` package and `net/http/httptest`, with table-driven tests where appropriate.
+
+Cover the cases listed in section 6:
+
+- HTTP 200 for each operation route.
+- Malformed JSON and empty bodies.
+- Unknown fields and trailing JSON data.
+- Missing operands.
+- `"a":"5"`, `"a":null`, and `1e400`.
+- An extra `b` operand for `sqrt`.
+- A body larger than 1 KiB returning 413.
+- Division by zero and negative square root returning 422 with the correct error envelope.
+- Unknown API routes returning 404 JSON.
+- GET on an operation route returning 405 and `Allow: POST`.
+- Response `Content-Type`.
+- `/healthz` returning `{"status":"ok"}`.
+
+Keep the existing calculator tests unchanged unless an actual incompatibility with the approved plan is discovered. Do not duplicate the domain implementation in HTTP tests.
+
+### 6. Verify against the plan
+
+From the `backend` module directory, execute and report the actual results of:
+
+1. `gofmt` on modified Go files.
+2. `gofmt -l .`
+3. `go vet ./...`
+4. `go test ./... -coverprofile=coverage.out`
+5. `go tool cover -func=coverage.out`
+
+Verify the plan's coverage targets
+
+Also run the server with `go run ./cmd/server` and verify the API using `curl.exe`, as required by T3's acceptance criteria. Use a separate terminal for requests if necessary. Do not claim the live API check succeeded unless it was actually performed.
+
+Do not modify `implementation_plan.md` or claim that an unmet coverage target passed.
+
+### 7. Record the prompt and report results
+
+Preserve all existing entries in `PROMPTS.md`. Record this exact prompt verbatim using the
+```
+
 
 
