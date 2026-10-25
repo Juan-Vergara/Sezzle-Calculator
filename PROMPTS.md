@@ -30,6 +30,8 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #9](#prompt-9--execute-t3-api--server) | Implementation (T3) | Execute T3 — API + Server | Gemini 4 Argon (High) | Accepted |
 | [Prompt #10](#prompt-10--execute-t4-frontend-scaffold) | Implementation (T4) | Execute T4 — Frontend Scaffold | Gemini 4 Argon (High) | Accepted |
 | [Prompt #11](#prompt-11--execute-t5-frontend-client--formatter--types) | Implementation (T5) | Execute T5 — Frontend Client + Formatter + Types | Gemini 4 Argon (High) | Accepted |
+| [Prompt #12](#prompt-12--execute-t6-calculator-state-machine-reducer--keys) | Implementation (T6) | Execute T6 — Calculator State Machine (Reducer + Keys) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #13](#prompt-13--review--fix-unary-chaining-with-pending-binary-operation-t6) | Implementation (T6) | Review & Fix Unary Chaining with Pending Binary Operation (T6) | Gemini 4 Argon (High) | Accepted (Fixed binary chaining after unary resolution and committed T6) |
 
 ---
 
@@ -1425,7 +1427,102 @@ Report:
 Stop after T5 and wait for review. Do not begin T6.
 ```
 
+---
 
+### Prompt #12 — Execute T6: Calculator State Machine (Reducer + Keys)
 
+- **Phase:** T6 — Calculator State Machine (Reducer + Keys)
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Implement the pure calculator state machine (`src/calculator/reducer.ts`), keypad definitions and keyboard mapping (`src/calculator/keys.ts`), and unit tests (`src/calculator/reducer.test.ts`) covering all transitions and edge cases defined in `implementation_plan.md` §5 and §6.
+- **Outcome:** Accepted — Implemented `keys.ts`, `reducer.ts`, and `reducer.test.ts` with 100% statement/branch/function/line coverage on both `keys.ts` and `reducer.ts` (33 total frontend tests passing across 4 test files).
+- **Files Affected:** `frontend/src/calculator/keys.ts`, `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Execute **T6 — Calculator State Machine (Reducer + Keys)**, following `implementation_plan.md` as the specification. If this prompt conflicts with the plan, follow the plan.
+
+T1–T5 are complete. Implement T6 only.
+
+### 1. Inspect the existing project
+
+Before modifying anything:
+
+1. Read `implementation_plan.md`, especially the approved decisions, frontend architecture, state-machine design, keyboard behavior, test strategy, and T6 acceptance criteria.
+2. Read `AGENTS.md` and the applicable local skills if available.
+3. Inspect Git status, recent commits, `PROMPTS.md`, and the existing calculator types, formatter, API client, and tests.
+4. Preserve the existing implementation and follow the established names and interfaces wherever the plan requires them.
+
+### 2. Implement the T6 state machine
+
+Implement the reducer and related state-transition logic specified for T6.
+
+- Use the existing types in `frontend/src/calculator/types.ts` where appropriate.
+- Follow the plan's exact state shape, action definitions, transitions, and calculator behavior.
+- Preserve immediate execution from left to right; do not introduce operator precedence or an expression parser.
+- Keep arithmetic on the backend. The reducer must coordinate calculator state and requests, not independently calculate results.
+- Handle the user actions and edge cases specified in the plan, including clearing, digit entry, decimal input, operator selection, evaluation, and unary operations wherever T6 assigns them.
+- Implement keyboard mappings only to the extent explicitly assigned to T6.
+- Keep the implementation focused. Do not build the full React UI or implement later-task hooks and integration unless the plan explicitly assigns them to T6.
+
+Do not invent state transitions, add features, change the API contract, or introduce dependencies. If the plan leaves a detail unspecified, choose the simplest behavior consistent with its existing decisions. If a genuine contradiction prevents implementation, report it instead of silently changing the plan.
+
+### 3. Add reducer and keyboard tests
+
+Use the existing Vitest setup. Add the tests required by T6's acceptance criteria, covering the defined state transitions and keyboard behavior.
+
+Tests must validate observable state changes and edge cases rather than merely checking that the reducer executes. Keep tests deterministic and do not make real network requests.
+
+Do not modify existing T5 tests unless a real incompatibility is discovered.
+
+### 4. Verify
+
+Run the relevant frontend tests, followed by:
+
+- `npm run lint`
+- `npm run typecheck`
+- `npm run build`
+- `npm run test:coverage`
+
+Report actual results. If a command fails, investigate and fix the cause within T6's scope; do not weaken tests or coverage thresholds merely to obtain a pass.
+
+### 5. Record the prompt and inspect the diff
+
+Preserve all existing entries in `PROMPTS.md`. Record this exact prompt verbatim using the local `log-prompt` skill if available, following the plan's logging conventions.
+
+Inspect Git status and the final diff. Confirm that changes are limited to T6 deliverables and `PROMPTS.md`.
+
+Do not stage, commit, or push.
+
+### 6. Report and stop
+
+Report:
+- Files created or modified.
+- State transitions and keyboard behavior implemented.
+- Tests added and their results.
+- Actual results of lint, typecheck, build, and coverage.
+- Git status, blockers, and deviations from the plan.
+- Status: `PASS`, `PASS WITH NOTES`, `INCOMPLETE`, or `BLOCKED`.
+
+Stop after T6 and wait for review. Do not begin T7.
+```
+
+---
+
+### Prompt #13 — Review & Fix Unary Chaining with Pending Binary Operation (T6)
+
+- **Phase:** T6 — Calculator State Machine (Reducer + Keys)
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Inspect and resolve the edge case where a unary operation (`√`, `%`) resolves while a binary operation is pending (`pendingOp !== null`) and is followed by another binary operator (e.g. `2 + 9 √ × 4 =` or `50 + 10 % + 5 =`), then commit T6.
+- **Outcome:** Accepted — Fixed `reducer.ts` so a resolved unary operation while `pendingOp` is active marks the right-hand operand as ready for binary chaining (`request(pendingOp, [acc, entry], then: chain(op))`) instead of replacing `pendingOp`, added regression tests in `reducer.test.ts` (100% coverage on `reducer.ts` and `keys.ts`), and committed T6.
+- **Files Affected:** `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Creo que hay algo pendiente, aunque recuerda siempre apegarte al plan si estoy en lo incorrecto. hay un punto funcional que sí merece atención: el manejo de operaciones unarias mientras existe una operación binaria pendiente.
+
+Si es asi, resolvamoslo y entonces si es necesario hacemos el commit
+```
 
 
