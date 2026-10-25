@@ -29,6 +29,7 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #8](#prompt-8--approve--commit-t1-and-t2) | Implementation (T1/T2) | Approve & Commit T1 and T2 | Gemini 4 Argon (High) | Accepted (Created Conventional Commits for T1 and T2) |
 | [Prompt #9](#prompt-9--execute-t3-api--server) | Implementation (T3) | Execute T3 — API + Server | Gemini 4 Argon (High) | Accepted |
 | [Prompt #10](#prompt-10--execute-t4-frontend-scaffold) | Implementation (T4) | Execute T4 — Frontend Scaffold | Gemini 4 Argon (High) | Accepted |
+| [Prompt #11](#prompt-11--execute-t5-frontend-client--formatter--types) | Implementation (T5) | Execute T5 — Frontend Client + Formatter + Types | Gemini 4 Argon (High) | Accepted |
 
 ---
 
@@ -1355,6 +1356,75 @@ Report:
 
 Stop after T4 and wait for review. Do not begin T5.
 ```
+
+---
+
+### Prompt #11 — Execute T5: Frontend Client + Formatter + Types
+
+- **Phase:** T5 — Frontend Client + Formatter + Types
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Implement the frontend TypeScript domain/API types (`src/calculator/types.ts`), 15-significant-digit number formatter (`src/calculator/format.ts`), native `fetch` API client (`src/api/client.ts`), and unit tests (`format.test.ts`, `client.test.ts`).
+- **Outcome:** Accepted — Implemented all T5 modules and unit tests (16 tests passing across 3 test files with 95.86% line coverage and 93.75% branch coverage).
+- **Files Affected:** `frontend/src/calculator/types.ts`, `frontend/src/calculator/format.ts`, `frontend/src/calculator/format.test.ts`, `frontend/src/api/client.ts`, `frontend/src/api/client.test.ts`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Execute **T5 — Frontend Client + Formatter + Types**, following `implementation_plan.md` as the specification. If this prompt conflicts with the plan, follow the plan.
+
+T1–T4 are complete. T5 is the only task authorized in this execution.
+
+### 1. Inspect the existing project
+
+Before modifying anything:
+
+1. Read `implementation_plan.md`, especially the decisions, frontend architecture, API contract, testing strategy, task breakdown, and relevant T5 acceptance criteria.
+2. Read `AGENTS.md` and the applicable local skills if available.
+3. Inspect Git status, recent commits, `PROMPTS.md`, and the existing frontend and backend implementations.
+4. Confirm the API client, formatter, types, and test file locations specified by the plan.
+5. Preserve all existing work.
+
+### 2. Implement T5 exactly as specified
+
+Implement only the frontend API client, number formatter, and TypeScript types assigned to T5.
+
+- Follow the API contract in the plan and the existing Go backend implementation.
+- Use native `fetch` as approved; do not add an HTTP client dependency.
+- Keep arithmetic on the backend. Do not implement calculator operations in the frontend.
+- Follow the plan's exact request and response schemas, endpoint names, error handling, and number-formatting rules.
+- Preserve the approved architecture and naming conventions.
+- Add the unit tests required by T5, following the existing Vitest setup.
+- Do not implement the calculator reducer, state management, React hook, full UI, keyboard handling, Docker, CI, or later-task deliverables unless the plan explicitly assigns something to T5.
+
+Do not introduce new features, dependencies, error codes, or API behavior. If an actual conflict between the plan and existing code prevents implementation, explain it and stop rather than silently changing the approved design.
+
+### 3. Verify the implementation
+
+Run the verification commands required by T5 and the plan. At minimum, verify the relevant frontend tests, type checking, linting, and production build as applicable to the task.
+
+Report actual command results. Do not claim a test or check passed unless it was executed successfully.
+
+### 4. Update the prompt log
+
+Preserve all existing entries in `PROMPTS.md`. Record this exact prompt verbatim using the local `log-prompt` skill if available, following the logging format required by the plan.
+
+Inspect the final diff and Git status. Confirm that the changes are limited to T5 deliverables and the prompt log.
+
+Do not stage, commit, or push.
+
+### 5. Report and stop
+
+Report:
+- Files created or modified.
+- The API client, types, and formatter implemented.
+- Tests added and their actual results.
+- Results of the required verification commands.
+- Git status, blockers, and any deviations from the plan.
+- Status: `PASS`, `PASS WITH NOTES`, `INCOMPLETE`, or `BLOCKED`.
+
+Stop after T5 and wait for review. Do not begin T6.
+```
+
 
 
 
