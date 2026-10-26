@@ -39,6 +39,11 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #18](#prompt-18--execute-t7-hook--ui) | Implementation (T7) | Execute T7 — Hook + UI | Gemini 4 Argon (High) | Accepted |
 | [Prompt #19](#prompt-19--acceptance-review--integration-test-hardening-for-t7) | Implementation (T7) | Acceptance Review & Integration Test Hardening for T7 | Gemini 4 Argon (High) | Accepted |
 | [Prompt #20](#prompt-20--approve--commit-t7) | Implementation (T7) | Approve & Commit T7 | Gemini 4 Argon (High) | Accepted (Created Conventional Commit for T7) |
+| [Prompt #21](#prompt-21--execute-t8-real-integration--end-to-end-validation) | Implementation (T8) | Execute T8 — Real Integration & End-to-End Validation | Gemini 4 Argon (High) | Accepted |
+| [Prompt #22](#prompt-22--local-run--test-commands-reference) | Implementation (T8) | Local Run & Test Commands Reference | Gemini 4 Argon (High) | Accepted |
+| [Prompt #23](#prompt-23--evaluate-ui-refinements-title-button-font-size-display-gradient) | Implementation (T8) | Evaluate UI Refinements (Title, Button Font Size, Display Gradient) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #24](#prompt-24--apply-ui-refinements--re-verify-project-t8) | Implementation (T8) | Apply UI Refinements & Re-verify Project (T8) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #25](#prompt-25--approve--commit-t8-and-layout-clarification) | Implementation (T8) | Approve & Commit T8 and Layout Clarification | Gemini 4 Argon (High) | Accepted (Created Conventional Commit for T8) |
 
 ---
 
@@ -1694,4 +1699,277 @@ Report the files inspected or changed, the tests added, actual command results, 
 Good, make the corresponding commit
 ```
 
+---
 
+### Prompt #21 — Execute T8: Real Integration & End-to-End Validation
+
+- **Phase:** T8 — Real Integration & End-to-End Validation
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Start the live Go backend (`:8080`) and Vite frontend (`:5173`), validate the full application in a real Chromium browser at Desktop (`1280×800`) and Mobile (`360×800`), verify all binary/unary/chaining/editing/operator/error/cancellation/keyboard flows end-to-end against `/api/v1/...`, fix any defects discovered (`decimal` error-state recovery in `reducer.ts` and keyboard shortcuts `r`/`R`, `Delete`, `c`/`C`, `F9`, `,`, `x`/`X` in `keys.ts`), and re-run all verification suites.
+- **Outcome:** Accepted — All live end-to-end browser flows, visual checks (Desktop and 360×800), and backend/frontend test suites pass.
+- **Files Affected:** `frontend/src/calculator/keys.ts`, `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+## T8 — Integración y Validación End-to-End
+
+Continúa con la implementación de **Sezzle Calculator** siguiendo estrictamente `implementation_plan.md` y el estado actual del repositorio.
+
+T7 ya fue completado y validado. **No vuelvas a implementar ni modificar innecesariamente T4–T7.** El objetivo de T8 es comprobar que el sistema completo funciona correctamente en un entorno real y corregir únicamente los problemas que se encuentren durante esta validación.
+
+### Objetivos
+
+1. Levantar y verificar el **backend y frontend** en conjunto.
+2. Ejecutar la aplicación en un navegador real.
+3. Verificar visualmente la interfaz en:
+   - Desktop.
+   - Viewport de aproximadamente **360 px de ancho**.
+4. Comprobar que el frontend realmente se comunica con el backend mediante `/api/v1/...`.
+5. Realizar pruebas manuales end-to-end de todas las operaciones y flujos principales.
+6. Verificar especialmente los casos de estado, errores, cancelación y teclado.
+7. Corregir cualquier defecto encontrado, manteniendo la arquitectura y contratos definidos por el plan.
+8. Ejecutar nuevamente toda la batería de verificaciones después de cualquier modificación.
+
+### Flujos funcionales que debes validar
+
+Prueba en la aplicación real, no únicamente mediante Vitest:
+
+#### Operaciones binarias
+- `12 + 3 = 15`
+- `12 - 3 = 9`
+- `12 × 3 = 36`
+- `12 ÷ 3 = 4`
+- `2 ^ 3 = 8`
+
+#### Ejecución inmediata izquierda → derecha
+- `2 + 3 × 4 = 20`
+- Verificar que se realicen las llamadas:
+  - `add(2, 3)` → `5`
+  - `multiply(5, 4)` → `20`
+
+#### Operaciones unarias
+- `9 √ = 3` o el flujo equivalente definido por la implementación.
+- `50 + 10 % = 50.1`
+- Verificar que `%` se ejecute mediante `/api/v1/percentage` y que posteriormente se conserve correctamente la operación binaria pendiente.
+
+#### Edición
+- Entrada de varios dígitos.
+- Decimal.
+- Doble decimal.
+- `±`.
+- `⌫`.
+- `AC`.
+- Reemplazo de entrada después de una operación.
+- Límite de 15 dígitos.
+
+#### Operadores
+Verificar específicamente:
+
+- `3 +` seguido de `×` debe reemplazar `+`.
+- `3 + 9 √` seguido de `×` debe encadenar `3 + 3` antes de multiplicar.
+- Probar también el comportamiento equivalente con `%`.
+
+#### Errores
+- `8 ÷ 0 =`.
+- Verificar que aparezca el mensaje de error proporcionado por el backend.
+- Después del error, comprobar recuperación mediante dígito y decimal.
+- Comprobar que las demás teclas estén bloqueadas durante `loading`.
+
+#### Cancelación y solicitudes stale
+Verificar en navegador real:
+
+- Iniciar una operación que quede pendiente.
+- Pulsar `AC`.
+- Confirmar que la interfaz vuelve a `0`.
+- Confirmar que una respuesta tardía de la operación cancelada no modifica la pantalla.
+- Si es posible, iniciar posteriormente otra operación y verificar que una respuesta vieja tampoco pueda sobrescribirla.
+
+#### Teclado físico
+Verificar:
+
+- `7 * 6 Enter` → `42`
+- `+`, `-`, `*`, `/`, `^`
+- `%`
+- `r` / `R`
+- `Backspace`
+- `Escape`
+- `Delete`
+- `c` / `C`
+- `F9`
+- `Enter` / `=`
+- `.`
+- `,`
+
+También comprobar que combinaciones con `Ctrl`, `Alt` o `Meta` no sean interceptadas.
+
+### Validación visual
+
+Comprobar especialmente:
+
+#### Desktop
+- Calculadora centrada.
+- Tarjeta y teclado correctamente proporcionados.
+- Display legible.
+- Botones alineados.
+- No existen desbordamientos ni elementos cortados.
+
+#### 360 px
+Usar un viewport real de aproximadamente **360 × 800 px**.
+
+Comprobar:
+
+- No hay scroll horizontal.
+- Todos los botones son visibles y utilizables.
+- Los botones mantienen al menos el tamaño táctil establecido por el proyecto.
+- El `0` ocupa las columnas previstas.
+- `=` ocupa las filas previstas.
+- El display no desborda con números largos.
+- Las clases de tamaño adaptativo funcionan correctamente.
+- Los mensajes de error siguen siendo legibles.
+- El layout ocupa correctamente el espacio disponible.
+
+### Backend / API
+
+No cambies los contratos existentes sin una razón demostrable.
+
+Verifica que las llamadas del frontend coincidan exactamente con los endpoints y payloads definidos por el backend y `implementation_plan.md`.
+
+Si encuentras un problema de integración:
+
+1. Identifica primero si el problema está en frontend, backend, proxy o configuración.
+2. Corrige únicamente la parte necesaria.
+3. No introduzcas dependencias o librerías nuevas salvo que estén explícitamente justificadas por el plan.
+4. Mantén TypeScript estricto.
+5. Mantén la arquitectura existente.
+
+### Verificaciones obligatorias al finalizar
+
+Ejecuta desde `frontend/`:
+
+```powershell
+npm test
+npm run test:coverage
+npm run lint
+npm run typecheck
+npm run build
+```
+
+Además, si el proyecto dispone de comandos o pruebas de integración del backend, ejecútalos también según `implementation_plan.md`.
+
+Comprueba:
+
+```powershell
+git diff --check
+git status --short --ignored
+```
+
+### Importante sobre cambios
+
+No hagas cambios cosméticos o refactors que no sean necesarios para T8.
+
+Si todo funciona correctamente, **no modifiques código solamente para "mejorarlo"**.
+
+Si encuentras errores, documenta:
+
+- qué se encontró,
+- cómo se reprodujo,
+- cuál era la causa,
+- qué archivo se modificó,
+- cómo se corrigió,
+- y qué prueba demuestra que quedó solucionado.
+
+### Git
+
+No hagas `git push`.
+
+Si T8 termina correctamente, **no hagas commit automáticamente**. Primero presenta un reporte completo para revisión.
+
+El reporte final debe incluir:
+
+1. Archivos modificados.
+2. Validaciones end-to-end realizadas.
+3. Resultado de la prueba visual desktop.
+4. Resultado de la prueba visual a 360 px.
+5. Operaciones probadas.
+6. Casos de error/cancelación/stale requests.
+7. Pruebas de teclado.
+8. Resultado de `npm test`.
+9. Resultado de `npm run test:coverage`.
+10. Resultado de `npm run lint`.
+11. Resultado de `npm run typecheck`.
+12. Resultado de `npm run build`.
+13. `git diff --check`.
+14. Git status.
+15. Cualquier desviación o problema encontrado.
+
+Al final indica claramente:
+
+**T8 — PASS** si la integración y validación completa cumplen los requisitos, o **T8 — FAIL** si existe algún problema pendiente.
+
+Detente después de T8 y espera revisión antes de continuar con la siguiente tarea.
+```
+
+---
+
+### Prompt #22 — Local Run & Test Commands Reference
+
+- **Phase:** T8 — Real Integration & End-to-End Validation
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Provide the PowerShell commands to run and test the Go backend and React/Vite frontend locally.
+- **Outcome:** Accepted — Provided step-by-step commands for starting the backend and frontend servers, manual `Invoke-RestMethod` API checks, and running backend/frontend test suites.
+- **Files Affected:** None (read-only guidance)
+
+**Verbatim Prompt:**
+
+```text
+Rapidamente, antes de pasar a t9, quisiera que me dieras los comandos para yo correr y probar todo el proyecto
+```
+
+---
+
+### Prompt #23 — Evaluate UI Refinements (Title, Button Font Size, Display Gradient)
+
+- **Phase:** T8 — Real Integration & End-to-End Validation
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Assess the feasibility and impact of three minor visual adjustments: changing the header text from `"Sezzle Calculator"` to `"Calculator"`, slightly increasing keypad button character size, and adding a subtle right-to-left dark-to-lighter gradient on the calculator display.
+- **Outcome:** Accepted — Confirmed all three adjustments require minimal localized changes (`App.tsx`, `App.test.tsx`, `index.css`) with zero impact on calculator architecture, state machine, or accessibility contracts.
+- **Files Affected:** None (impact assessment)
+
+**Verbatim Prompt:**
+
+```text
+Ok, unos comentarios acerca de unos detalles y me respondes la posibilidad de implementar esos cambios sin alteran gran cosa. Primero me gustaria que el texto de arriba "Sezzle Calculator" Fuera unicamente "Calculator", despues me gustaria que el tamaño de los caracteres de los botones fuera ligeramente mayor, despues tambien me gustaria si es posible que la pantalla de la calculadora tuviera un ligero degradado de derecha a izquierda de oscuro a claro de ese mismo color que tiene ahora (muy ligero).
+```
+
+---
+
+### Prompt #24 — Apply UI Refinements & Re-verify Project (T8)
+
+- **Phase:** T8 — Real Integration & End-to-End Validation
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Apply the three requested UI refinements (`"Calculator"` heading, `1.425rem` keypad button font size, and subtle right-to-left display gradient) and re-run the complete verification suite including live browser end-to-end validation.
+- **Outcome:** Accepted — Updated `App.tsx`, `App.test.tsx`, and `index.css`; re-verified all unit/integration tests, lint, typecheck, production build, backend tests, and live browser E2E checks at desktop (`1280×800`) and mobile (`360×800`).
+- **Files Affected:** `frontend/src/App.tsx`, `frontend/src/App.test.tsx`, `frontend/src/index.css`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Bien, aplica las modificaciones, y vuelve la verificar completamente el proyecto
+```
+
+---
+
+### Prompt #25 — Approve & Commit T8 and Layout Clarification
+
+- **Phase:** T8 — Git Commit
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Stage and commit the reviewed T8 deliverables using Conventional Commits and answer the developer's question regarding how the calculator card is sized and centered on the page background.
+- **Outcome:** Accepted — Created commit `fix(frontend): refine keyboard shortcuts, decimal error recovery, and UI polish` and explained the responsive card layout vs. page background behavior.
+- **Files Affected:** `frontend/src/calculator/keys.ts`, `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `frontend/src/App.tsx`, `frontend/src/App.test.tsx`, `frontend/src/index.css`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+```text
+Bien, se ve bien. Deseo que hagas el commit. Tambien una duda, una vez terminado la calculadora apareceria solo del tamaño que es si? Es decir no ocupando todo el espacio de la pantallla y que la calculadora en si sea solo lo de hecha y que haya un fondo grande atras
+```

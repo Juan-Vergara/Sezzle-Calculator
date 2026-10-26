@@ -41,7 +41,7 @@ export const KEYPAD_KEYS: readonly KeyDefinition[] = [
     ariaLabel: 'all clear',
     action: { type: 'clear' },
     variant: 'utility',
-    shortcuts: ['Escape'],
+    shortcuts: ['Escape', 'Delete', 'c', 'C'],
   },
   {
     id: 'backspace',
@@ -75,7 +75,7 @@ export const KEYPAD_KEYS: readonly KeyDefinition[] = [
     ariaLabel: 'square root',
     action: { type: 'unaryOp', operation: 'sqrt' },
     variant: 'utility',
-    shortcuts: [],
+    shortcuts: ['r', 'R'],
   },
   {
     id: 'power',
@@ -91,7 +91,7 @@ export const KEYPAD_KEYS: readonly KeyDefinition[] = [
     ariaLabel: 'toggle sign',
     action: { type: 'toggleSign' },
     variant: 'utility',
-    shortcuts: [],
+    shortcuts: ['F9'],
   },
   {
     id: 'multiply',
@@ -99,7 +99,7 @@ export const KEYPAD_KEYS: readonly KeyDefinition[] = [
     ariaLabel: 'multiply',
     action: { type: 'binaryOp', operation: 'multiply' },
     variant: 'operator',
-    shortcuts: ['*'],
+    shortcuts: ['*', 'x', 'X'],
   },
 
   // Row 3
@@ -221,7 +221,7 @@ export const KEYPAD_KEYS: readonly KeyDefinition[] = [
     ariaLabel: 'decimal point',
     action: { type: 'decimal' },
     variant: 'digit',
-    shortcuts: ['.'],
+    shortcuts: ['.', ','],
   },
 ];
 

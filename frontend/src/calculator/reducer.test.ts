@@ -499,7 +499,7 @@ describe('calculator/reducer', () => {
         lastRequestId: 1,
       });
 
-      // Operators, decimal, toggleSign, backspace are ignored while in error state
+      // Operators, toggleSign, and backspace are ignored while in error state
       expect(
         reducer(errored, { type: 'binaryOp', operation: 'add' }),
       ).toBe(errored);
@@ -507,7 +507,6 @@ describe('calculator/reducer', () => {
         reducer(errored, { type: 'unaryOp', operation: 'sqrt' }),
       ).toBe(errored);
       expect(reducer(errored, { type: 'equals' })).toBe(errored);
-      expect(reducer(errored, { type: 'decimal' })).toBe(errored);
       expect(reducer(errored, { type: 'toggleSign' })).toBe(errored);
       expect(reducer(errored, { type: 'backspace' })).toBe(errored);
 
@@ -520,6 +519,13 @@ describe('calculator/reducer', () => {
       expect(recoveredByDigit.error).toBeNull();
       expect(recoveredByDigit.entry).toBe('3');
       expect(recoveredByDigit.lastRequestId).toBe(1);
+
+      // Pressing decimal clears the error and starts "0."
+      const recoveredByDecimal = reducer(errored, { type: 'decimal' });
+      expect(recoveredByDecimal.status).toBe('ready');
+      expect(recoveredByDecimal.error).toBeNull();
+      expect(recoveredByDecimal.entry).toBe('0.');
+      expect(recoveredByDecimal.lastRequestId).toBe(1);
 
       // Pressing AC also clears the error while keeping lastRequestId
       const recoveredByAC = reducer(errored, { type: 'clear' });
@@ -546,6 +552,7 @@ describe('calculator/reducer', () => {
         digit: '7',
       });
       expect(mapKeyboardKeyToAction('.')).toEqual({ type: 'decimal' });
+      expect(mapKeyboardKeyToAction(',')).toEqual({ type: 'decimal' });
       expect(mapKeyboardKeyToAction('+')).toEqual({
         type: 'binaryOp',
         operation: 'add',
@@ -555,6 +562,14 @@ describe('calculator/reducer', () => {
         operation: 'subtract',
       });
       expect(mapKeyboardKeyToAction('*')).toEqual({
+        type: 'binaryOp',
+        operation: 'multiply',
+      });
+      expect(mapKeyboardKeyToAction('x')).toEqual({
+        type: 'binaryOp',
+        operation: 'multiply',
+      });
+      expect(mapKeyboardKeyToAction('X')).toEqual({
         type: 'binaryOp',
         operation: 'multiply',
       });
@@ -570,12 +585,24 @@ describe('calculator/reducer', () => {
         type: 'unaryOp',
         operation: 'percentage',
       });
+      expect(mapKeyboardKeyToAction('r')).toEqual({
+        type: 'unaryOp',
+        operation: 'sqrt',
+      });
+      expect(mapKeyboardKeyToAction('R')).toEqual({
+        type: 'unaryOp',
+        operation: 'sqrt',
+      });
+      expect(mapKeyboardKeyToAction('F9')).toEqual({ type: 'toggleSign' });
       expect(mapKeyboardKeyToAction('Enter')).toEqual({ type: 'equals' });
       expect(mapKeyboardKeyToAction('=')).toEqual({ type: 'equals' });
       expect(mapKeyboardKeyToAction('Backspace')).toEqual({
         type: 'backspace',
       });
       expect(mapKeyboardKeyToAction('Escape')).toEqual({ type: 'clear' });
+      expect(mapKeyboardKeyToAction('Delete')).toEqual({ type: 'clear' });
+      expect(mapKeyboardKeyToAction('c')).toEqual({ type: 'clear' });
+      expect(mapKeyboardKeyToAction('C')).toEqual({ type: 'clear' });
       expect(mapKeyboardKeyToAction('a')).toBeNull();
       expect(mapKeyboardKeyToAction('F1')).toBeNull();
     });

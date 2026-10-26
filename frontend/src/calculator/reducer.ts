@@ -134,12 +134,19 @@ export function reducer(
     return state;
   }
 
-  // In error state, a digit resets the error and starts typing; other keys (except AC) are ignored.
+  // In error state, a digit or decimal resets the error and starts typing; other keys (except AC) are ignored.
   if (state.status === 'error') {
     if (action.type === 'digit') {
       return {
         ...INITIAL_STATE,
         entry: action.digit,
+        lastRequestId: state.lastRequestId,
+      };
+    }
+    if (action.type === 'decimal') {
+      return {
+        ...INITIAL_STATE,
+        entry: '0.',
         lastRequestId: state.lastRequestId,
       };
     }

@@ -99,6 +99,7 @@ body {
 
 .calculator-display {
   background-color: var(--bg-display);
+  background-image: linear-gradient(to left, var(--bg-display) 0%, #111a2c 100%);
   border: 1px solid var(--border-subtle);
   border-radius: 0.875rem;
   padding: 0.875rem 1rem;
@@ -169,7 +170,7 @@ body {
   border: 1px solid var(--border-subtle);
   border-radius: 0.75rem;
   font-family: var(--font-sans);
-  font-size: 1.25rem;
+  font-size: 1.425rem;
   font-weight: 600;
   color: var(--text-primary);
   cursor: pointer;

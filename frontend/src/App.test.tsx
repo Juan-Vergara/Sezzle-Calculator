@@ -5,7 +5,7 @@ describe('App scaffold', () => {
   it('renders the application heading', () => {
     render(<App />);
     expect(
-      screen.getByRole('heading', { name: /sezzle calculator/i }),
+      screen.getByRole('heading', { name: /^calculator$/i }),
     ).toBeInTheDocument();
   });
 });
