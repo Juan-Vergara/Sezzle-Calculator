@@ -1,0 +1,21 @@
+# Dependencies, build output, and test coverage artifacts
+node_modules/
+dist/
+coverage/
+*.tsbuildinfo
+
+# Git, environment, and editor files
+.git
+.gitignore
+.env
+.env.*
+.vscode
+.idea
+.DS_Store
+Thumbs.db
+*.swp
+
+# Container and documentation files
+Dockerfile
+.dockerignore
+*.md

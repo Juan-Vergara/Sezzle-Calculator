@@ -1,0 +1,20 @@
+# Git and editor metadata
+.git
+.gitignore
+.gitattributes
+.vscode
+.idea
+*.swp
+
+# Build, test, and coverage artifacts
+bin/
+*.exe
+*.test
+*.out
+coverage.out
+coverage.html
+
+# Container and documentation files
+Dockerfile
+.dockerignore
+*.md
