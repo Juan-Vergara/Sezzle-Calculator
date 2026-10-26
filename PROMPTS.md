@@ -26,24 +26,22 @@ This document records **verbatim** all prompts and instructions used during the 
 | [Prompt #5](#prompt-5--execute-t1-repository-bootstrap-completion) | Implementation (T1) | Execute T1 — Repository Bootstrap (Completion) | Gemini 4 Argon (High) | Accepted |
 | [Prompt #6](#prompt-6--execute-t2-backend-domain-interrupted) | Implementation (T2) | Execute T2 — Backend Domain (Initial Attempt) | Claude Opus 5.5 (High) | Modified (Implemented `go.mod`, `calculator.go`, `calculator_test.go` with 100% coverage; interrupted before logging prompt) |
 | [Prompt #7](#prompt-7--recover--verify-t2-backend-domain) | Implementation (T2) | Recover & Verify T2 — Backend Domain | Gemini 4 Argon (High) | Accepted |
-| [Prompt #8](#prompt-8--approve--commit-t1-and-t2) | Implementation (T1/T2) | Approve & Commit T1 and T2 | Gemini 4 Argon (High) | Accepted (Created Conventional Commits for T1 and T2) |
-| [Prompt #9](#prompt-9--execute-t3-api--server) | Implementation (T3) | Execute T3 — API + Server | Gemini 4 Argon (High) | Accepted |
-| [Prompt #10](#prompt-10--execute-t4-frontend-scaffold) | Implementation (T4) | Execute T4 — Frontend Scaffold | Gemini 4 Argon (High) | Accepted |
-| [Prompt #11](#prompt-11--execute-t5-frontend-client--formatter--types) | Implementation (T5) | Execute T5 — Frontend Client + Formatter + Types | Gemini 4 Argon (High) | Accepted |
-| [Prompt #12](#prompt-12--execute-t6-calculator-state-machine-reducer--keys) | Implementation (T6) | Execute T6 — Calculator State Machine (Reducer + Keys) | Gemini 4 Argon (High) | Accepted |
-| [Prompt #13](#prompt-13--review--fix-unary-chaining-with-pending-binary-operation-t6) | Implementation (T6) | Review & Fix Unary Chaining with Pending Binary Operation (T6) | Gemini 4 Argon (High) | Modified (Refined in Prompts #14–#15 to eliminate `WeakSet`/`WeakMap` identity state) |
-| [Prompt #14](#prompt-14--architectural-review-of-weaksetcalculatorstate-purity-t6) | Implementation (T6) | Architectural Review of `WeakSet<CalculatorState>` Purity (T6) | Gemini 4 Argon (High) | Accepted (Analyzed value collision and presented Options A/B/C) |
-| [Prompt #15](#prompt-15--adopt-option-a-value-deterministic-reducer-state-t6) | Implementation (T6) | Adopt Option A: Value-Deterministic Reducer State (T6) | Gemini 4 Argon (High) | Accepted |
-| [Prompt #16](#prompt-16--verify-reducer-code-transitions--stale-request-handling-t6) | Implementation (T6) | Verify Reducer Code Transitions & Stale Request Handling (T6) | Gemini 4 Argon (High) | Accepted |
-| [Prompt #17](#prompt-17--inspect-diff--commit-t6-value-deterministic-reducer) | Implementation (T6) | Inspect Diff & Commit T6 Value-Deterministic Reducer | Gemini 4 Argon (High) | Accepted |
-| [Prompt #18](#prompt-18--execute-t7-hook--ui) | Implementation (T7) | Execute T7 — Hook + UI | Gemini 4 Argon (High) | Accepted |
-| [Prompt #19](#prompt-19--acceptance-review--integration-test-hardening-for-t7) | Implementation (T7) | Acceptance Review & Integration Test Hardening for T7 | Gemini 4 Argon (High) | Accepted |
-| [Prompt #20](#prompt-20--approve--commit-t7) | Implementation (T7) | Approve & Commit T7 | Gemini 4 Argon (High) | Accepted (Created Conventional Commit for T7) |
-| [Prompt #21](#prompt-21--execute-t8-real-integration--end-to-end-validation) | Implementation (T8) | Execute T8 — Real Integration & End-to-End Validation | Gemini 4 Argon (High) | Accepted |
-| [Prompt #22](#prompt-22--local-run--test-commands-reference) | Implementation (T8) | Local Run & Test Commands Reference | Gemini 4 Argon (High) | Accepted |
-| [Prompt #23](#prompt-23--evaluate-ui-refinements-title-button-font-size-display-gradient) | Implementation (T8) | Evaluate UI Refinements (Title, Button Font Size, Display Gradient) | Gemini 4 Argon (High) | Accepted |
-| [Prompt #24](#prompt-24--apply-ui-refinements--re-verify-project-t8) | Implementation (T8) | Apply UI Refinements & Re-verify Project (T8) | Gemini 4 Argon (High) | Accepted |
-| [Prompt #25](#prompt-25--approve--commit-t8-and-layout-clarification) | Implementation (T8) | Approve & Commit T8 and Layout Clarification | Gemini 4 Argon (High) | Accepted (Created Conventional Commit for T8) |
+| [Prompt #8](#prompt-8--execute-t3-api--server) | Implementation (T3) | Execute T3 — API + Server | Gemini 4 Argon (High) | Accepted |
+| [Prompt #9](#prompt-9--execute-t4-frontend-scaffold) | Implementation (T4) | Execute T4 — Frontend Scaffold | Gemini 4 Argon (High) | Accepted |
+| [Prompt #10](#prompt-10--execute-t5-frontend-client--formatter--types) | Implementation (T5) | Execute T5 — Frontend Client + Formatter + Types | Gemini 4 Argon (High) | Accepted |
+| [Prompt #11](#prompt-11--execute-t6-calculator-state-machine-reducer--keys) | Implementation (T6) | Execute T6 — Calculator State Machine (Reducer + Keys) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #12](#prompt-12--review--fix-unary-chaining-with-pending-binary-operation-t6) | Implementation (T6) | Review & Fix Unary Chaining with Pending Binary Operation (T6) | Gemini 4 Argon (High) | Modified (Refined in Prompts #13–#14 to eliminate `WeakSet`/`WeakMap` identity state) |
+| [Prompt #13](#prompt-13--architectural-review-of-weaksetcalculatorstate-purity-t6) | Implementation (T6) | Architectural Review of `WeakSet<CalculatorState>` Purity (T6) | Gemini 4 Argon (High) | Accepted (Analyzed value collision and presented Options A/B/C) |
+| [Prompt #14](#prompt-14--adopt-option-a-value-deterministic-reducer-state-t6) | Implementation (T6) | Adopt Option A: Value-Deterministic Reducer State (T6) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #15](#prompt-15--verify-reducer-code-transitions--stale-request-handling-t6) | Implementation (T6) | Verify Reducer Code Transitions & Stale Request Handling (T6) | Gemini 4 Argon (High) | Accepted |
+| [Prompt #16](#prompt-16--execute-t7-hook--ui) | Implementation (T7) | Execute T7 — Hook + UI | Gemini 4 Argon (High) | Accepted |
+| [Prompt #17](#prompt-17--acceptance-review--integration-test-hardening-for-t7) | Implementation (T7) | Acceptance Review & Integration Test Hardening for T7 | Gemini 4 Argon (High) | Accepted |
+| [Prompt #18](#prompt-18--execute-t8-real-integration--end-to-end-validation) | Implementation (T8) | Execute T8 — Real Integration & End-to-End Validation | Gemini 4 Argon (High) | Accepted |
+| [Prompt #19](#prompt-19--local-run--test-commands-reference) | Implementation (T8) | Local Run & Test Commands Reference | Gemini 4 Argon (High) | Accepted |
+| [Prompt #20](#prompt-20--execute-t9-dockerization--end-to-end-container-verification) | Implementation (T9) | Execute T9 — Dockerization & End-to-End Container Verification | Gemini 4 Argon (High) | Accepted |
+| [Prompt #21](#prompt-21--execute-t10-documentation-completion) | Implementation (T10) | Execute T10 — Documentation Completion | Gemini 4 Argon (High) | Accepted |
+| [Prompt #22](#prompt-22--execute-t11-final-review-against-the-implementation-plan) | Implementation (T11) | Execute T11 — Final Review Against the Implementation Plan | Gemini 4 Argon (High) | Accepted |
+| [Prompt #23](#prompt-23--execute-t12-optional-github-actions-ci) | Implementation (T12) | Execute T12 — Optional GitHub Actions CI | Gemini 4 Argon (High) | Accepted |
 
 ---
 
@@ -120,7 +118,7 @@ Decisiones o suposiciones de diseño
 
 **Verbatim Prompt:**
 
-```text
+````text
 Actúa como un **Senior Software Engineer / Software Architect** encargado de planificar una solución profesional para una este assignment.
 
 Tu objetivo en esta etapa NO es implementar el proyecto. Tu objetivo es **analizar los requisitos, inspeccionar el workspace y producir un plan técnico preciso, pragmático y ejecutable** que posteriormente utilizaremos para implementar la solución.
@@ -617,7 +615,7 @@ Quiero que tu respuesta final de esta fase tenga exactamente estas secciones:
 En **Open Decisions**, enumera únicamente las decisiones que necesiten mi aprobación antes de comenzar la implementación.
 
 No implementes nada hasta que yo revise y apruebe este plan.
-```
+````
 
 ---
 
@@ -821,7 +819,7 @@ Provide:
 5. Any deviation, unresolved issue, or blocker.
 6. A clear PASS/FAIL assessment of T1, with evidence.
 
-**Stop after T1. Do not proceed to T2
+**Stop after T1. Do not proceed to T2.**
 ```
 
 ---
@@ -1121,23 +1119,7 @@ Choose exactly one:
 
 ---
 
-### Prompt #8 — Approve & Commit T1 and T2
-
-- **Phase:** T1 / T2 — Git Commit
-- **Model:** Gemini 4 Argon (High)
-- **Objective:** Stage and commit the reviewed T1 (Repository Bootstrap) and T2 (Backend Domain) deliverables using Conventional Commits while keeping `.agents/` and `AGENTS.md` untracked locally.
-- **Outcome:** Accepted — Created two atomic commits (`chore: bootstrap repository structure and documentation` and `feat(backend): implement pure calculator domain and unit tests`).
-- **Files Affected:** `.gitattributes`, `.gitignore`, `README.md`, `PROMPTS.md`, `backend/go.mod`, `backend/internal/calculator/calculator.go`, `backend/internal/calculator/calculator_test.go`
-
-**Verbatim Prompt:**
-
-```text
-Reviewed. Looks good. Commit T1 and T2. 
-```
-
----
-
-### Prompt #9 — Execute T3: API + Server
+### Prompt #8 — Execute T3: API + Server
 
 - **Phase:** T3 — Backend HTTP API & Server
 - **Model:** Gemini 4 Argon (High)
@@ -1280,12 +1262,12 @@ Do not modify `implementation_plan.md` or claim that an unmet coverage target pa
 
 ### 7. Record the prompt and report results
 
-Preserve all existing entries in `PROMPTS.md`. Record this exact prompt verbatim using the
+Preserve all existing entries in `PROMPTS.md`. Record this exact prompt verbatim using the local `log-prompt` skill if available.
 ```
 
 ---
 
-### Prompt #10 — Execute T4: Frontend Scaffold
+### Prompt #9 — Execute T4: Frontend Scaffold
 
 - **Phase:** T4 — Frontend Scaffold
 - **Model:** Gemini 4 Argon (High)
@@ -1373,7 +1355,7 @@ Stop after T4 and wait for review. Do not begin T5.
 
 ---
 
-### Prompt #11 — Execute T5: Frontend Client + Formatter + Types
+### Prompt #10 — Execute T5: Frontend Client + Formatter + Types
 
 - **Phase:** T5 — Frontend Client + Formatter + Types
 - **Model:** Gemini 4 Argon (High)
@@ -1441,7 +1423,7 @@ Stop after T5 and wait for review. Do not begin T6.
 
 ---
 
-### Prompt #12 — Execute T6: Calculator State Machine (Reducer + Keys)
+### Prompt #11 — Execute T6: Calculator State Machine (Reducer + Keys)
 
 - **Phase:** T6 — Calculator State Machine (Reducer + Keys)
 - **Model:** Gemini 4 Argon (High)
@@ -1521,7 +1503,7 @@ Stop after T6 and wait for review. Do not begin T7.
 
 ---
 
-### Prompt #13 — Review & Fix Unary Chaining with Pending Binary Operation (T6)
+### Prompt #12 — Review & Fix Unary Chaining with Pending Binary Operation (T6)
 
 - **Phase:** T6 — Calculator State Machine (Reducer + Keys)
 - **Model:** Gemini 4 Argon (High)
@@ -1539,7 +1521,7 @@ Si es asi, resolvamoslo y entonces si es necesario hacemos el commit
 
 ---
 
-### Prompt #14 — Architectural Review of `WeakSet<CalculatorState>` Purity (T6)
+### Prompt #13 — Architectural Review of `WeakSet<CalculatorState>` Purity (T6)
 
 - **Phase:** T6 — Calculator State Machine (Reducer + Keys)
 - **Model:** Gemini 4 Argon (High)
@@ -1555,7 +1537,7 @@ La corrección del reducer parece abordar el caso borde, pero hay un detalle imp
 
 ---
 
-### Prompt #15 — Adopt Option A: Value-Deterministic Reducer State (T6)
+### Prompt #14 — Adopt Option A: Value-Deterministic Reducer State (T6)
 
 - **Phase:** T6 — Calculator State Machine (Reducer + Keys)
 - **Model:** Gemini 4 Argon (High)
@@ -1599,7 +1581,7 @@ If the plan does not clearly determine an edge case, explain the ambiguity and p
 
 ---
 
-### Prompt #16 — Verify Reducer Code Transitions & Stale Request Handling (T6)
+### Prompt #15 — Verify Reducer Code Transitions & Stale Request Handling (T6)
 
 - **Phase:** T6 — Calculator State Machine (Reducer + Keys)
 - **Model:** Gemini 4 Argon (High)
@@ -1615,30 +1597,7 @@ Bien, una observacion creo, aunque recuerda siempre procurar el plan. Hay un det
 
 ---
 
-### Prompt #17 — Inspect Diff & Commit T6 Value-Deterministic Reducer
-
-- **Phase:** T6 — Calculator State Machine (Reducer + Keys)
-- **Model:** Gemini 4 Argon (High)
-- **Objective:** Run `git status --short`, `git diff --check`, `git diff --stat`, and `git diff` on the 4 modified T6 files (`types.ts`, `reducer.ts`, `reducer.test.ts`, `PROMPTS.md`), confirm no unrelated changes exist, and create a new Conventional Commit.
-- **Outcome:** Accepted — Verified clean diff and created commit `refactor(frontend): make calculator reducer state transitions deterministic by value`.
-- **Files Affected:** `frontend/src/calculator/types.ts`, `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `PROMPTS.md`
-
-**Verbatim Prompt:**
-
-```text
-Bien, si primero ejecuta
-
-git status --short
-git diff --check
-git diff --stat
-git diff -- frontend/src/calculator/types.ts frontend/src/calculator/reducer.ts frontend/src/calculator/reducer.test.ts PROMPTS.md
-
-Si el resultado coincide con el reporte y no aparecen cambios ajenos a T6, puedes hacer el commit como comit nuevo.
-```
-
----
-
-### Prompt #18 — Execute T7: Hook + UI
+### Prompt #16 — Execute T7: Hook + UI
 
 - **Phase:** T7 — Hook + UI
 - **Model:** Gemini 4 Argon (High)
@@ -1658,7 +1617,7 @@ Proceed with T7 only, following the existing T7 (real integration) prompt and `i
 
 ---
 
-### Prompt #19 — Acceptance Review & Integration Test Hardening for T7
+### Prompt #17 — Acceptance Review & Integration Test Hardening for T7
 
 - **Phase:** T7 — Hook + UI
 - **Model:** Gemini 4 Argon (High)
@@ -1685,23 +1644,7 @@ Report the files inspected or changed, the tests added, actual command results, 
 
 ---
 
-### Prompt #20 — Approve & Commit T7
-
-- **Phase:** T7 — Git Commit
-- **Model:** Gemini 4 Argon (High)
-- **Objective:** Stage and commit the reviewed T7 (Hook + UI + Integration Tests) deliverables using Conventional Commits while keeping `.agents/` and `AGENTS.md` untracked locally.
-- **Outcome:** Accepted — Created commit `feat(frontend): implement calculator hook, UI components, and integration tests`.
-- **Files Affected:** `frontend/src/calculator/useCalculator.ts`, `frontend/src/components/Display.tsx`, `frontend/src/components/Keypad.tsx`, `frontend/src/components/Calculator.tsx`, `frontend/src/components/Calculator.test.tsx`, `frontend/src/App.tsx`, `frontend/src/index.css`, `PROMPTS.md`
-
-**Verbatim Prompt:**
-
-```text
-Good, make the corresponding commit
-```
-
----
-
-### Prompt #21 — Execute T8: Real Integration & End-to-End Validation
+### Prompt #18 — Execute T8: Real Integration & End-to-End Validation
 
 - **Phase:** T8 — Real Integration & End-to-End Validation
 - **Model:** Gemini 4 Argon (High)
@@ -1711,7 +1654,7 @@ Good, make the corresponding commit
 
 **Verbatim Prompt:**
 
-```text
+````text
 ## T8 — Integración y Validación End-to-End
 
 Continúa con la implementación de **Sezzle Calculator** siguiendo estrictamente `implementation_plan.md` y el estado actual del repositorio.
@@ -1908,11 +1851,11 @@ Al final indica claramente:
 **T8 — PASS** si la integración y validación completa cumplen los requisitos, o **T8 — FAIL** si existe algún problema pendiente.
 
 Detente después de T8 y espera revisión antes de continuar con la siguiente tarea.
-```
+````
 
 ---
 
-### Prompt #22 — Local Run & Test Commands Reference
+### Prompt #19 — Local Run & Test Commands Reference
 
 - **Phase:** T8 — Real Integration & End-to-End Validation
 - **Model:** Gemini 4 Argon (High)
@@ -1928,48 +1871,572 @@ Rapidamente, antes de pasar a t9, quisiera que me dieras los comandos para yo co
 
 ---
 
-### Prompt #23 — Evaluate UI Refinements (Title, Button Font Size, Display Gradient)
+### Prompt #20 — Execute T9: Dockerization & End-to-End Container Verification
 
-- **Phase:** T8 — Real Integration & End-to-End Validation
+- **Phase:** T9 — Docker
 - **Model:** Gemini 4 Argon (High)
-- **Objective:** Assess the feasibility and impact of three minor visual adjustments: changing the header text from `"Sezzle Calculator"` to `"Calculator"`, slightly increasing keypad button character size, and adding a subtle right-to-left dark-to-lighter gradient on the calculator display.
-- **Outcome:** Accepted — Confirmed all three adjustments require minimal localized changes (`App.tsx`, `App.test.tsx`, `index.css`) with zero impact on calculator architecture, state machine, or accessibility contracts.
-- **Files Affected:** None (impact assessment)
+- **Objective:** Create production multi-stage Dockerfiles for the Go backend (`golang:1.27-alpine` -> `gcr.io/distroless/static-debian12:nonroot`) and React/Vite frontend (`node:22-alpine` -> `nginx:alpine`), `.dockerignore` files, `frontend/nginx.conf`, and `docker-compose.yml`; build and run the containers; verify `/healthz`, all 7 `/api/v1/*` endpoints, and browser E2E flows on `:3000`; re-run all backend/frontend test suites; and stop the containers cleanly with `docker compose down`.
+- **Outcome:** Accepted — Created all 6 Docker deliverables (`backend/Dockerfile`, `backend/.dockerignore`, `frontend/Dockerfile`, `frontend/.dockerignore`, `frontend/nginx.conf`, `docker-compose.yml`), verified `docker compose config`, `docker compose build`, `docker compose up -d`, live API and browser E2E checks on `:3000` and `:8080`, and re-verified all backend and frontend tests.
+- **Files Affected:** `backend/Dockerfile`, `backend/.dockerignore`, `frontend/Dockerfile`, `frontend/.dockerignore`, `frontend/nginx.conf`, `docker-compose.yml`, `PROMPTS.md`
+
+**Verbatim Prompt:**
+
+````text
+## T9 — Dockerización y ejecución completa. Siguiente la Implementacion.md como principal.
+
+T8 quedó validado como PASS, incluyendo integración E2E real con el backend Go, frontend Vite, navegador Chrome, responsive 360×800 y desktop.
+
+Continúa ahora con **T9 — Docker**.
+
+### Objetivo
+
+Dockerizar el proyecto completo de manera reproducible, permitiendo levantar **frontend + backend** mediante Docker Compose y ejecutar la aplicación de extremo a extremo sin depender de instalaciones locales de Node/Go para la ejecución de la aplicación.
+
+### 1. Revisar primero
+
+Antes de modificar archivos, revisa:
+
+- `implementation_plan.md`
+- estructura actual del repositorio
+- `backend/`
+- `frontend/`
+- configuración actual de Vite
+- configuración del backend Go
+- contratos API existentes
+- `.gitignore`
+- cualquier Dockerfile o `docker-compose` existente
+
+Respeta la arquitectura y contratos ya implementados en T1–T8.
+
+No rehagas funcionalidades existentes.
+
+### 2. Backend Docker
+
+Crear la configuración Docker necesaria para ejecutar el backend Go.
+
+Requisitos:
+
+- Utilizar una imagen adecuada para compilar Go.
+- Preferir un **multi-stage build**:
+  1. etapa de build
+  2. etapa runtime mínima.
+- El binario final debe ejecutarse como proceso principal del contenedor.
+- Exponer el puerto `8080`.
+- Mantener `GET /healthz` funcionando.
+- El contenedor debe poder recibir correctamente las peticiones `/api/v1/...`.
+- No introducir cambios innecesarios en la lógica de negocio.
+
+Si el proyecto ya tiene una configuración Go adecuada, reutilizarla.
+
+### 3. Frontend Docker
+
+Crear la configuración Docker necesaria para el frontend.
+
+La solución debe producir un build de producción de Vite.
+
+Preferir un **multi-stage build**:
+
+1. instalar dependencias y ejecutar el build;
+2. servir los archivos estáticos mediante un servidor apropiado para producción.
+
+Verifica especialmente el comportamiento del proxy/API.
+
+El frontend debe poder comunicarse con el backend correctamente cuando ambos se ejecuten mediante Docker Compose.
+
+No asumir que `localhost:8080` dentro del contenedor frontend apunta al backend. Si es necesario, adaptar la configuración de producción para utilizar el nombre del servicio Docker correspondiente.
+
+### 4. Docker Compose
+
+Crear `docker-compose.yml` o `compose.yaml` según lo que establezca el proyecto.
+
+Debe existir como mínimo:
+
+```text
+frontend
+backend
+```
+
+Requisitos:
+
+- Ambos servicios deben poder iniciarse conjuntamente.
+- El frontend debe depender correctamente del backend cuando corresponda.
+- Utilizar la red interna de Compose para la comunicación entre servicios.
+- No hardcodear una IP del host.
+- Exponer al host únicamente los puertos necesarios.
+- El backend debe permanecer accesible en `8080`.
+- El frontend debe ser accesible desde el navegador mediante su puerto publicado.
+- La comunicación frontend → backend debe funcionar correctamente.
+
+### 5. Healthcheck
+
+Implementar healthcheck para el backend utilizando `/healthz`.
+
+No inventar endpoints nuevos si `/healthz` ya cumple el propósito.
+
+El healthcheck debe permitir identificar correctamente si el backend está disponible.
+
+### 6. Configuración y variables
+
+Revisa cuidadosamente cualquier variable de entorno necesaria. (Aunque creo que no hay, dime si si)
+
+No introduzcas secretos reales en el repositorio.
+
+Si existen variables que solamente son necesarias para desarrollo, distingue claramente:
+
+- desarrollo local;
+- ejecución mediante Docker;
+- producción.
+
+Evita configuraciones innecesariamente complejas.
+
+### 7. `.dockerignore`
+
+Crear `.dockerignore` apropiados para evitar copiar al contexto de build:
+
+- `node_modules`
+- `dist`
+- `coverage`
+- `.git`
+- archivos temporales
+- cualquier artefacto generado que no sea necesario
+
+Haz lo mismo para backend si corresponde.
+
+### 8. Construcción
+
+Ejecuta la construcción completa mediante Docker Compose.
+
+Como mínimo verifica:
+
+```powershell
+docker compose config
+docker compose build
+docker compose up -d
+```
+
+Después verifica el estado de los contenedores.
+
+Comprueba:
+
+```powershell
+docker compose ps
+```
+
+y los logs cuando sea necesario:
+
+```powershell
+docker compose logs
+```
+
+### 9. Healthcheck y API
+
+Comprueba desde el entorno Docker que:
+
+- backend responde en `/healthz`;
+- frontend puede comunicarse con backend;
+- `POST /api/v1/add`;
+- `POST /api/v1/subtract`;
+- `POST /api/v1/multiply`;
+- `POST /api/v1/divide`;
+- `POST /api/v1/power`;
+- `POST /api/v1/sqrt`;
+- `POST /api/v1/percentage`.
+
+No basta con comprobar que los contenedores estén "Up": debe comprobarse la comunicación real.
+
+### 10. E2E mediante navegador
+
+Con los contenedores ejecutándose, abre el frontend desde el navegador.
+
+Comprueba al menos:
+
+- `12 + 3 =` → `15`
+- `2 + 3 × 4 =` → `20`
+- `9 √` → `3`
+- `50 + 10 % =` → `50.1`
+- `8 ÷ 0 =` → error esperado
+- recuperación mediante dígito
+- teclado físico `7 * 6 Enter` → `42`
+
+Verifica que las peticiones realmente atraviesen la configuración Docker y lleguen al backend.
+
+### 11. No romper las pruebas existentes
+
+Después de la dockerización ejecuta nuevamente:
+
+```powershell
+cd frontend
+npm test
+npm run test:coverage
+npm run lint
+npm run typecheck
+npm run build
+```
+
+Y en backend:
+
+```powershell
+go test ./...
+go vet ./...
+gofmt -l .
+```
+
+Si Docker requiere alguna modificación de configuración que afecte estos comandos, corrígela de manera que las pruebas locales continúen funcionando.
+
+### 12. Limpieza
+
+Cuando termines las pruebas, no dejes contenedores ejecutándose innecesariamente.
+
+Puedes utilizar:
+
+```powershell
+docker compose down
+```
+
+pero conserva todos los archivos de configuración Docker creados por T9.
+
+No borres código fuente ni tests.
+
+### 13. Git
+
+No hagas `git add`, `git commit` ni `git push` automáticamente.
+
+Al finalizar ejecuta:
+
+```powershell
+git diff --check
+git status --short --ignored
+```
+
+### 14. Reporte final
+
+Entrega un reporte detallado indicando:
+
+1. Archivos creados/modificados.
+2. Dockerfiles y estrategia multi-stage utilizada.
+3. Servicios definidos en Compose.
+4. Puertos.
+5. Red/comunicación frontend → backend.
+6. Healthcheck.
+7. Resultado de `docker compose config`.
+8. Resultado de `docker compose build`.
+9. Resultado de `docker compose up`.
+10. Estado de los contenedores.
+11. Pruebas reales de API.
+12. Pruebas E2E desde navegador.
+13. Resultado de todas las pruebas frontend.
+14. Resultado de todas las pruebas backend.
+15. `git diff --check`.
+16. Git status.
+17. Problemas encontrados y cómo fueron solucionados.
+18. Cualquier desviación respecto a `implementation_plan.md`.
+
+Concluye explícitamente con:
+
+**T9 — PASS** o **T9 — FAIL**
+
+Detente después de T9 y espera revisión antes de continuar con T10.
+````
+
+---
+
+### Prompt #21 — Execute T10: Documentation Completion
+
+- **Phase:** T10 — Documentation
+- **Model:** Gemini 4 Argon (High)
+- **Objective:** Finalize `README.md` with complete setup instructions, architecture, repository structure, Docker Compose workflow, calculator evaluation semantics, API reference and examples (`curl.exe` / `Invoke-RestMethod`), error codes, numerical precision, design decisions, and assumptions; create `docs/TESTING.md` with full test commands, test inventory, verified coverage tables (`go tool cover` and Vitest `v8`), manual API test scripts, and Docker verification steps; and log the T10 prompt verbatim in `PROMPTS.md`.
+- **Outcome:** Accepted — Completed `README.md`, created `docs/TESTING.md`, updated `PROMPTS.md`, and verified all frontend, backend, Docker Compose config, and Git checks.
+- **Files Affected:** `README.md`, `docs/TESTING.md`, `PROMPTS.md`
 
 **Verbatim Prompt:**
 
 ```text
-Ok, unos comentarios acerca de unos detalles y me respondes la posibilidad de implementar esos cambios sin alteran gran cosa. Primero me gustaria que el texto de arriba "Sezzle Calculator" Fuera unicamente "Calculator", despues me gustaria que el tamaño de los caracteres de los botones fuera ligeramente mayor, despues tambien me gustaria si es posible que la pantalla de la calculadora tuviera un ligero degradado de derecha a izquierda de oscuro a claro de ese mismo color que tiene ahora (muy ligero).
+# T10 — Documentation Completion
+
+T9 — Docker has been reviewed and reported as PASS. Continue with **T10 — Documentation**, following `implementation_plan.md` as the definitive specification, and also the Sezzle assesment specifications
+
+"Objective
+Build a full-stack calculator application with a React frontend and a backend microservice. The frontend should consume the backend API to perform basic and advanced arithmetic operations. Focus on clean design, maintainable code, and testable architecture.Requirements
+Functional
+Operations:
+Addition, Subtraction, Multiplication, Division
+Optional: Exponentiation, Square Root, Percentage
+Frontend (React):
+Intuitive UI for entering input and displaying results
+Input validation and error handling
+Responsive design (basic mobile support)
+Backend (REST API):
+Expose endpoints for calculator operations
+Validate input and handle edge cases (division by zero, invalid data)
+Return results in JSON format
+Non-Functional
+Clean, readable, and idiomatic code (frontend and backend)
+Unit tests covering key functionality for both layers
+Documentation: setup instructions, API usage, and design rationale
+Optional: Dockerfile for full-stack deployment
+Constraints
+Frontend: React (TypeScript preferred)
+Backend: Go is perferred
+Deliverables
+Git repository with frontend and backend code
+README with setup instructions, API examples, and design decisions
+Unit tests and coverage report
+Optional: Dockerfile to run frontend + backend together
+Instructions
+Use any AI tooling you would like
+Spend ~2–4 hours on this assignment. Prioritize correctness, clarity, and maintainability over extra features.
+Push your solution to GitHub, GitLab, or another Git repository.
+Share the repository link with us for evaluation.
+Share any prompts that you used in your work
+Make sure your README includes:
+Setup instructions
+How to run the frontend and backend
+Examples of API calls (if using REST)
+Design decisions or assumptions
+"
+
+Implement T10 only. Do not start T11 or T12.
+
+## 1. Inspect the project first
+
+Before modifying anything:
+
+1. Read `implementation_plan.md`, especially the documentation, API contract, testing, Docker, and task sections.
+2. Read the existing `README.md`, `PROMPTS.md`, and `docs/TESTING.md` if present.
+3. Inspect the actual repository structure, `backend/`, `frontend/`, `docker-compose.yml`, Dockerfiles, Nginx configuration, `.gitignore`, and available npm/Go commands.
+4. Check `git status --short` and `git diff` to preserve all work from previous tasks.
+5. Verify documented commands and endpoints against the actual code. Do not invent behavior or claim unverified results.
+
+## 2. Complete README.md
+
+Write the README in English, consistent with decision D10 in the plan.
+
+Include the sections required by `implementation_plan.md`, covering at least:
+
+- Project overview and features.
+- Technology stack and architecture.
+- Repository structure.
+- Prerequisites for local development and Docker execution.
+- How to run the backend locally.
+- How to run the frontend locally.
+- How to run the complete application with Docker Compose.
+- Application URLs and ports.
+- All seven calculator operations and their semantics.
+- The immediate left-to-right execution model, with an example such as `2 + 3 × 4 = 20`.
+- API endpoints, request payloads, success responses, and error responses.
+- Error handling and numerical precision, including the 15-significant-digit display limit.
+- How to run frontend and backend tests.
+- Coverage commands and the project's configured thresholds.
+- Relevant implementation decisions and limitations.
+- AI usage documentation and a link to `PROMPTS.md`.
+
+Use real commands that work in the current repository. Keep the README concise, useful, and appropriate for a technical take-home assignment.
+
+## 3. Complete docs/TESTING.md
+
+Create or update `docs/TESTING.md` as required by the plan.
+
+Document:
+
+- Frontend test, lint, typecheck, build, and coverage commands.
+- Backend formatting, vetting, testing, and coverage commands.
+- How to run the complete test suite.
+- How to test the API manually with `curl.exe` and PowerShell `Invoke-RestMethod` on Windows.
+- Representative success and error requests.
+- How to run and verify the Docker Compose deployment.
+- Any genuine limitations of automated tests versus browser-based manual verification.
+
+Use the actual endpoint names and error codes implemented by the backend. Do not promise a coverage threshold that differs from the configured thresholds.
+
+## 4. Verify Docker documentation
+
+Ensure the Docker instructions match the current configuration:
+
+- `docker compose config`
+- `docker compose build`
+- `docker compose up -d`
+- `docker compose ps`
+- `docker compose logs`
+- `docker compose down`
+
+Document the correct frontend and backend URLs, the Nginx reverse proxy, and the internal service communication.
+
+Do not introduce new Docker configuration or modify the existing Dockerfiles unless a demonstrable documentation blocker requires a minimal correction. T10 is a documentation task.
+
+## 5. PROMPTS.md
+
+Preserve the existing prompt history.
+
+- Do not rewrite or summarize previous prompts.
+- Do not fabricate prompts, model names, or results.
+- Record the T10 prompt verbatim using the `log-prompt` skill if available.
+- Keep the prompt's original language, as required by the project conventions.
+
+## 6. Documentation accuracy
+
+Check every documented command and file path against the repository.
+
+Do not claim that Docker, browser E2E, or other tests were executed during T10 unless you actually execute them. Previous verified results may be described as previous results, not as new T10 executions.
+
+Do not include secrets, machine-specific absolute paths, or unnecessary local setup details.
+
+Do not make application code changes simply to improve the documentation.
+
+## 7. Verification
+
+After the documentation changes, run the checks appropriate to T10:
+
+- Frontend: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`.
+- Backend: `go test ./...`, `go vet ./...`, and `gofmt -l .`.
+- Docker configuration: `docker compose config`, if Docker is available.
+- Git: `git diff --check` and `git status --short --ignored`.
+
+Run commands from the correct directories. Report actual exit statuses and results. If Docker is unavailable, state that explicitly rather than claiming success.
+
+## 8. Scope boundaries
+
+- Do not start T11 final review.
+- Do not implement T12 CI.
+- Do not add features, dependencies, API endpoints, or unrelated refactors.
+- Do not run `git add`, `git commit`, or `git push`.
+- Preserve existing source code and tests.
+- Keep documentation in English, except for prompts in `PROMPTS.md`, which must remain verbatim.
+
+## 9. Final report
+
+Report:
+
+1. Files created or modified.
+2. Sections added or updated in `README.md`.
+3. Contents added or updated in `docs/TESTING.md`.
+4. Confirmation that `PROMPTS.md` was preserved and the T10 prompt logged.
+5. Verification commands and actual results.
+6. Any inaccuracies or gaps discovered in the existing project.
+7. `git diff --check` and Git status.
+8. Any deviations from `implementation_plan.md`.
+
+Conclude with **T10 — PASS**, **T10 — PASS WITH NOTES**, or **T10 — FAIL**.
+
+Stop after T10 and wait for review. Do not begin T11 or T12.
 ```
 
 ---
 
-### Prompt #24 — Apply UI Refinements & Re-verify Project (T8)
+### Prompt #22 — Execute T11: Final Review Against the Implementation Plan
 
-- **Phase:** T8 — Real Integration & End-to-End Validation
+- **Phase:** T11 — Final Review
 - **Model:** Gemini 4 Argon (High)
-- **Objective:** Apply the three requested UI refinements (`"Calculator"` heading, `1.425rem` keypad button font size, and subtle right-to-left display gradient) and re-run the complete verification suite including live browser end-to-end validation.
-- **Outcome:** Accepted — Updated `App.tsx`, `App.test.tsx`, and `index.css`; re-verified all unit/integration tests, lint, typecheck, production build, backend tests, and live browser E2E checks at desktop (`1280×800`) and mobile (`360×800`).
-- **Files Affected:** `frontend/src/App.tsx`, `frontend/src/App.test.tsx`, `frontend/src/index.css`, `PROMPTS.md`
+- **Objective:** Conduct an independent senior-engineer final acceptance review of the entire repository (T1–T10) against `implementation_plan.md` and `.agents/skills/pre-delivery-review/SKILL.md`, execute all backend, frontend, coverage, and Docker checks, and report readiness for delivery.
+- **Outcome:** Accepted — Audited all backend, frontend, Docker, and documentation deliverables; corrected a minor description in `docs/TESTING.md` (`format.test.ts` non-finite fallback `"0"`); and verified all test, coverage, static analysis, Docker, and Git checks pass.
+- **Files Affected:** `docs/TESTING.md`, `PROMPTS.md`
 
 **Verbatim Prompt:**
 
 ```text
-Bien, aplica las modificaciones, y vuelve la verificar completamente el proyecto
+# T11 — Final Review Against the Implementation Plan
+
+Act as an independent senior engineer conducting the final acceptance review of this repository.
+
+## Source of truth
+
+Read `implementation_plan.md` completely and treat it as the definitive specification. Review the actual working tree, including all completed work from T1 through T10. Do not rely solely on previous agent reports.
+
+## Objectives
+
+Determine whether the project satisfies the implementation plan and is ready for delivery.
+
+### 1. Scope and repository audit
+- Compare the implementation against every applicable requirement in `implementation_plan.md`.
+- Inspect backend, frontend, API contract, reducer/state machine, error handling, Docker configuration, README, `docs/TESTING.md`, and `PROMPTS.md`.
+- Identify missing requirements, undocumented behavior, accidental scope expansion, or contradictions between code, tests, and documentation.
+- Confirm `.agents/` and `AGENTS.md` remain local-only and are excluded from Git.
+- Do not commit, push, create a remote repository, or change Git history.
+
+### 2. Backend and API
+Verify the specified operations and HTTP contract, including:
+- Request validation, missing operands versus explicit `null`, unknown fields, trailing JSON data, malformed/empty/oversized bodies.
+- Correct status codes and error envelopes for all specified cases.
+- Division by zero, negative square root, `NaN`, positive/negative infinity, overflow, and normalization of negative zero.
+- Correct routing, HTTP methods, `Allow` header, unknown `/api/` routes, health endpoint, server timeouts, graceful shutdown, and panic recovery.
+- Confirm arithmetic remains in the backend and domain logic remains appropriately separated.
+
+### 3. Frontend behavior
+Verify:
+- All seven operations and their operand requirements.
+- Immediate left-to-right evaluation without operator precedence.
+- Unary `%` and square-root behavior while a binary operation is pending.
+- Operator replacement, repeated equals, sign toggle, decimal handling, backspace, clear, and entry-length limits.
+- Loading states, error display/recovery, request cancellation, stale-response protection, and keyboard mappings.
+- Responsive layout, accessibility essentials, and consistency between UI behavior and documented semantics.
+- No arithmetic operation has accidentally moved into the frontend.
+
+### 4. Tests and reproducibility
+Run the relevant checks from the correct directories:
+- Backend: `gofmt -l .`, `go vet ./...`, and `go test ./...`.
+- Frontend: `npm test`, `npm run lint`, `npm run typecheck`, `npm run build`, and `npm run test:coverage`.
+- Docker: `docker compose config`; if Docker is available, build and start the services, verify health/API access through the configured routes, and shut them down cleanly.
+- Run `git diff --check`.
+
+Report actual command results and exit statuses. Do not claim that a test passed if it was not executed. If an environment limitation prevents a check, identify it explicitly. Check that the coverage claims in the documentation are consistent with the current results.
+
+### 5. Documentation and prompt history
+- Verify README instructions and examples against the actual implementation and current configuration.
+- Verify `docs/TESTING.md` commands, coverage claims, API examples, and limitations.
+- Check that `PROMPTS.md` preserves earlier entries and records prompts consistently with the repository's prompt-logging rules.
+- Do not fabricate prompt history, test results, or coverage measurements.
+
+### 6. Corrections policy
+Do not rewrite working code unless a concrete defect against `implementation_plan.md` is found.
 ```
 
 ---
 
-### Prompt #25 — Approve & Commit T8 and Layout Clarification
+### Prompt #23 — Execute T12: Optional GitHub Actions CI
 
-- **Phase:** T8 — Git Commit
+- **Phase:** T12 — CI (Conditional, D9)
 - **Model:** Gemini 4 Argon (High)
-- **Objective:** Stage and commit the reviewed T8 deliverables using Conventional Commits and answer the developer's question regarding how the calculator card is sized and centered on the page background.
-- **Outcome:** Accepted — Created commit `fix(frontend): refine keyboard shortcuts, decimal error recovery, and UI polish` and explained the responsive card layout vs. page background behavior.
-- **Files Affected:** `frontend/src/calculator/keys.ts`, `frontend/src/calculator/reducer.ts`, `frontend/src/calculator/reducer.test.ts`, `frontend/src/App.tsx`, `frontend/src/App.test.tsx`, `frontend/src/index.css`, `PROMPTS.md`
+- **Objective:** Add the optional GitHub Actions CI workflow (`.github/workflows/ci.yml`) triggered on pushes and pull requests to `main` with least-privilege permissions (`contents: read`), running backend formatting, `go vet`, and `go test -race` checks and frontend `npm ci`, lint, typecheck, test, coverage, and build checks; verify locally; and log the prompt in `PROMPTS.md`.
+- **Outcome:** Accepted — Created `.github/workflows/ci.yml`, verified local checks and `act -l` workflow syntax validation, and updated `PROMPTS.md`.
+- **Files Affected:** `.github/workflows/ci.yml`, `PROMPTS.md`
 
 **Verbatim Prompt:**
 
 ```text
-Bien, se ve bien. Deseo que hagas el commit. Tambien una duda, una vez terminado la calculadora apareceria solo del tamaño que es si? Es decir no ocupando todo el espacio de la pantallla y que la calculadora en si sea solo lo de hecha y que haya un fondo grande atras
+# T12 — Optional GitHub Actions CI
+
+Implement the optional final CI task defined in `implementation_plan.md`.
+
+## Before starting
+1. Read the CI requirements in `implementation_plan.md`, especially D9 and T12.
+2. Review the current repository scripts and project structure.
+3. Confirm that all required T1–T11 work remains intact.
+
+## Requirements
+- Add only the GitHub Actions workflow required by the implementation plan.
+- Trigger it on pushes and pull requests to the appropriate branch or branches, following the plan.
+- Run the existing backend checks from `backend/`: formatting validation, `go vet ./...`, and `go test ./...`.
+- Run the existing frontend checks from `frontend/`: install dependencies reproducibly from the lockfile, then run tests, lint, typecheck, and production build.
+- Use supported, compatible Go and Node.js versions based on the project configuration and README.
+- Use least-privilege workflow permissions and avoid unnecessary third-party actions or dependencies.
+- Do not add secrets, deployment steps, publishing, releases, badges, or unrelated automation.
+- Do not modify application logic, tests, documentation, or dependencies unless the CI workflow cannot work without a narrowly justified change. If such a change appears necessary, explain it before making it.
+- Do not commit or push.
+
+## Verification
+- Inspect the completed workflow for correct paths, commands, triggers, permissions, and dependency installation.
+- Run the relevant existing local checks again if practical.
+- If GitHub Actions cannot be executed locally, state that limitation honestly; do not claim the remote workflow passed.
+- Run `git diff --check` and inspect `git status --short --ignored`.
+- Record the new workflow in `PROMPTS.md` verbatim according to the repository's prompt-logging rules, without altering prior entries.
+
+## Final report
+Report:
+1. Files created or modified.
+2. The workflow triggers, jobs, and checks.
+3. Local verification commands and actual results.
+4. Any assumptions or limitations.
+5. `git diff --check` and final Git status.
+6. Overall status: PASS, PASS WITH NOTES, or FAIL.
+
+Stop after T12. Do not commit or push. Keep the implementation plan authoritative and do not expand scope.
 ```
